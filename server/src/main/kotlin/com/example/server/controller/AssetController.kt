@@ -1,10 +1,8 @@
 package com.example.server.controller
 
-import com.example.server.domain.asset.AssetRecord
-import com.example.server.domain.asset.AssetRecordRepository
-import com.example.server.domain.asset.AssetRecordRequest
+import com.example.server.domain.assetrecord.AssetRecord
+import com.example.server.domain.assetrecord.AssetRecordRequest
 import com.example.server.service.AssetService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 

@@ -1,4 +1,4 @@
-package com.example.server.domain.asset
+package com.example.server.domain.assetrecord
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

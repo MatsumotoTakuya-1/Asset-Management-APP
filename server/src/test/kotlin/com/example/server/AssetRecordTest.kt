@@ -1,8 +1,8 @@
 package com.example.server
 
-import com.example.server.domain.asset.AssetRecord
-import com.example.server.domain.asset.AssetRecordRepository
-import com.example.server.domain.asset.AssetRecordRequest
+import com.example.server.domain.assetrecord.AssetRecord
+import com.example.server.domain.assetrecord.AssetRecordRepository
+import com.example.server.domain.assetrecord.AssetRecordRequest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach

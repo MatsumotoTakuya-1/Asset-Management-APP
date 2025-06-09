@@ -1,7 +1,7 @@
 package com.example.server.service
 
-import com.example.server.domain.asset.AssetRecord
-import com.example.server.domain.asset.AssetRecordRepository
+import com.example.server.domain.assetrecord.AssetRecord
+import com.example.server.domain.assetrecord.AssetRecordRepository
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
