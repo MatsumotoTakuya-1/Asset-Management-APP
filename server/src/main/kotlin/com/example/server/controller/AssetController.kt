@@ -37,7 +37,7 @@ class AssetController (
     fun postAssetRecord(@RequestBody request: AssetRecordRequest) {
         val parsedYearMonth = LocalDate.parse("${request.yearMonth}-01")
         val record = AssetRecord(
-            assetId = request.assetId,
+            asset = request.assetId,
             yearMonth = parsedYearMonth,
             amount = request.amount,
             memo = request.memo,

@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "assets")
-data class AssetRecord(
+data class Asset(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,

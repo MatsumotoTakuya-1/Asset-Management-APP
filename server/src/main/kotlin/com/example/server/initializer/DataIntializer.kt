@@ -1,5 +1,7 @@
 package com.example.server.initializer
 
+import com.example.server.domain.asset.Asset
+import com.example.server.domain.asset.AssetRepository
 import com.example.server.domain.assetrecord.AssetRecord
 import com.example.server.domain.assetrecord.AssetRecordRepository
 import com.example.server.domain.transaction.Transaction
@@ -20,7 +22,8 @@ class DataInitializer {
 
     @Bean
     fun initDatabase(
-        assetRepo: AssetRecordRepository,
+        assetRepo: AssetRepository,
+        assetRecoRepo: AssetRecordRepository,
         userRepo: UserRepository,
         transactionRepo: TransactionRepository
     ) = CommandLineRunner {
@@ -36,13 +39,22 @@ class DataInitializer {
             )
         )
 
+        val asset = assetRepo.findAll().firstOrNull() ?: assetRepo.save(
+            Asset(
+                user=user,
+                name = "SBI証券",
+                assetType = "stock",
+                createdAt = LocalDateTime.now()
+            )
+        )
+
         // 資産データがなければ登録
-        if (assetRepo.count() == 0L) {
-            assetRepo.saveAll(
+        if (assetRecoRepo.count() == 0L) {
+            assetRecoRepo.saveAll(
                 listOf(
-                    AssetRecord(assetId = 1, yearMonth = LocalDate.parse("2025-06-01"), amount = BigDecimal("10000"), memo = "預金", createdAt = LocalDateTime.now()),
-                    AssetRecord(assetId = 2, yearMonth = LocalDate.parse("2025-06-01"), amount = BigDecimal("30000"), memo = "証券", createdAt = LocalDateTime.now()),
-                    AssetRecord(assetId = 3, yearMonth = LocalDate.parse("2025-05-01"), amount = BigDecimal("20000"), memo = "先月の資産", createdAt = LocalDateTime.now())
+                    AssetRecord(asset = asset, yearMonth = LocalDate.parse("2025-06-01"), amount = BigDecimal("10000"), memo = "預金", createdAt = LocalDateTime.now()),
+                    AssetRecord(asset = asset, yearMonth = LocalDate.parse("2025-06-01"), amount = BigDecimal("30000"), memo = "証券", createdAt = LocalDateTime.now()),
+                    AssetRecord(asset = asset, yearMonth = LocalDate.parse("2025-05-01"), amount = BigDecimal("20000"), memo = "先月の資産", createdAt = LocalDateTime.now())
                 )
             )
         }
