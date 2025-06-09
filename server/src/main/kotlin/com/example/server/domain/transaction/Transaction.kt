@@ -1,6 +1,6 @@
 package com.example.server.domain.transaction
 
-import com.example.server.domain.user.UserRepository
+import com.example.server.domain.user.User
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -15,7 +15,7 @@ data class Transaction(
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    val user: UserRepository,
+    val user: User,
 
     @Column(name = "year_month", nullable = false)
     val yearMonth: LocalDate,  // 例: 2025-06-01
