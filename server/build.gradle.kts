@@ -20,15 +20,25 @@ repositories {
 }
 
 dependencies {
+	//spring boot設定
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+
+	//DB Driver
+	runtimeOnly("org.postgresql:postgresql:42.6.0")
+	testRuntimeOnly("com.h2database:h2")
+
+	//kotlin
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+	//開発
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	runtimeOnly("com.h2database:h2")
+
+	//test
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+//	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 kotlin {
