@@ -19,8 +19,11 @@ class AssetController (@Autowired private val repository: AssetRecordRepository
 ){
 
     @GetMapping("/api/assets/total")
-    fun getTotalAsset(@RequestParam("yearMonth") yearMonth: String): ResponseEntity<Map<String, Any>> {
-        val parsedYearMonth = LocalDate.parse("$yearMonth-01")
+    fun getTotalAsset(@RequestParam(required = false) yearMonth: String?): ResponseEntity<Map<String, Any>> {
+        //year_monthがnullの場合今月に置き換え("2025-06")
+        val tempYearMonth = yearMonth ?: LocalDate.now().toString().substring(0,7)
+
+        val parsedYearMonth = LocalDate.parse("$tempYearMonth-01")
         val totalAmount = repository.findTotalAmountByYearMonth(parsedYearMonth) ?: BigDecimal.ZERO
         return ResponseEntity.ok(mapOf("totalAmount" to totalAmount))
     }

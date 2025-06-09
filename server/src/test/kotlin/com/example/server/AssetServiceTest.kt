@@ -5,6 +5,7 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
@@ -19,6 +20,7 @@ class AssetServiceTest  (
     @LocalServerPort val port: Int,
     @Autowired val repository: AssetRecordRepository
 ){
+
 
     @BeforeEach
     fun setup() {
@@ -54,15 +56,6 @@ class AssetServiceTest  (
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
     }
 
-    @Test
-    fun `GETリクエストは空のTodoリストを返す`() {
-        // localhost/api/assets/total に GETリクエストを送り、レスポンスを TodoEntity の配列として解釈する。
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/total", Array<AssetRecord>::class.java)
-        val asset = response.body!!
-
-        // 配列は0個の要素をもつこと。
-        assertThat(asset.size, equalTo(0))
-    }
 
     @Test
     fun `POSTリクエストはasset_recordオブジェクトを格納する`() {
@@ -77,13 +70,14 @@ class AssetServiceTest  (
         restTemplate.postForEntity("http://localhost:$port/api/assets/total", request, String::class.java)
 
         // localhost/api/assets/total に GETリクエストを送り、レスポンスを AssetRecord の配列として解釈する。
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/total", Array<AssetRecord>::class.java)
+        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/total", Map::class.java)
         val asset = response.body!!
+        println("asset: $asset")
 
-        // 配列 asset の長さは 1。
+        //  asset の長さは 1。
         assertThat(asset.size, equalTo(1))
-        // 配列 asset[0] には "1200000" をもつAssetRecord が含まれている。
-        assertThat(asset[0].assetId, equalTo(10))
+        // asset[0] には "1200000" をもつAssetRecord が含まれている。
+        assertThat(asset["totalAmount"], equalTo(1200000.0))
     }
 
     @Test

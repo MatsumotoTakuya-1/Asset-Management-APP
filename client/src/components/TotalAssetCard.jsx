@@ -10,7 +10,10 @@ function TotalAssetCard() {
     useEffect(() =>{
         const fetchTotal = async () => {
             try{
-                const res = await  axios.get('api/assets/total')
+                const res = await  axios.get('api/assets/total',{
+                    params: {yearMonth:'2025-06'}
+                })
+                // console.log(res.data)
                 setTotal(res.data.totalAmount)
 
             }catch (err){
