@@ -1,11 +1,13 @@
 package com.example.server
 
+import com.example.server.domain.asset.AssetRecord
+import com.example.server.domain.asset.AssetRecordRepository
+import com.example.server.domain.asset.AssetRecordRequest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
@@ -36,7 +38,7 @@ class AssetServiceTest  (
     @Test
     fun `GETリクエストはOKステータスを返す`() {
         // localhost/api/assets/total に GETリクエストを発行する。
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/total", String::class.java)
+        val response = restTemplate.getForEntity("http://localhost:$port/api/assets", String::class.java)
         // レスポンスのステータスコードは OK である。
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
     }
@@ -51,7 +53,7 @@ class AssetServiceTest  (
             memo = "ボーナス月"
         )
 
-        val response = restTemplate.postForEntity("http://localhost:$port/api/assets/total", request, String::class.java)
+        val response = restTemplate.postForEntity("http://localhost:$port/api/assets", request, String::class.java)
         // レスポンスのステータスコードは OK であること。
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
     }
@@ -67,10 +69,10 @@ class AssetServiceTest  (
             memo = "ボーナス月",
         )
 
-        restTemplate.postForEntity("http://localhost:$port/api/assets/total", request, String::class.java)
+        restTemplate.postForEntity("http://localhost:$port/api/assets", request, String::class.java)
 
         // localhost/api/assets/total に GETリクエストを送り、レスポンスを AssetRecord の配列として解釈する。
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/total", Map::class.java)
+        val response = restTemplate.getForEntity("http://localhost:$port/api/assets", Map::class.java)
         val asset = response.body!!
         println("asset: $asset")
 
@@ -83,13 +85,15 @@ class AssetServiceTest  (
     @Test
     fun `特定の年月の総資産額を取得できる`() {
         // テストデータ追加
-        repository.save(AssetRecord(
-            assetId = 1,
-            yearMonth = LocalDate.parse("2025-06-01"),
-            amount = BigDecimal("1000"),
-            memo = "test",
-            createdAt = LocalDateTime.now()
-        ))
+        repository.save(
+            AssetRecord(
+                assetId = 1,
+                yearMonth = LocalDate.parse("2025-06-01"),
+                amount = BigDecimal("1000"),
+                memo = "test",
+                createdAt = LocalDateTime.now()
+            )
+        )
         repository.save(AssetRecord(
             assetId = 2,
             yearMonth = LocalDate.parse("2025-06-01"),
@@ -99,7 +103,7 @@ class AssetServiceTest  (
         ))
 
         // APIコール
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/total?yearMonth=2025-06", Map::class.java)
+        val response = restTemplate.getForEntity("http://localhost:$port/api/assets?yearMonth=2025-06", Map::class.java)
 
         // 検証
         assertThat(response.statusCode, equalTo(HttpStatus.OK))

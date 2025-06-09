@@ -1,5 +1,7 @@
-package com.example.server
+package com.example.server.initializer
 
+import com.example.server.domain.asset.AssetRecord
+import com.example.server.domain.asset.AssetRecordRepository
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
