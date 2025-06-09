@@ -10,6 +10,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AssetServiceTest  (
@@ -82,6 +84,32 @@ class AssetServiceTest  (
         assertThat(asset.size, equalTo(1))
         // 配列 asset[0] には "1200000" をもつAssetRecord が含まれている。
         assertThat(asset[0].assetId, equalTo(10))
+    }
+
+    @Test
+    fun `特定の年月の総資産額を取得できる`() {
+        // テストデータ追加
+        repository.save(AssetRecord(
+            assetId = 1,
+            yearMonth = LocalDate.parse("2025-06-01"),
+            amount = BigDecimal("1000"),
+            memo = "test",
+            createdAt = LocalDateTime.now()
+        ))
+        repository.save(AssetRecord(
+            assetId = 2,
+            yearMonth = LocalDate.parse("2025-06-01"),
+            amount = BigDecimal("500"),
+            memo = "test2",
+            createdAt = LocalDateTime.now()
+        ))
+
+        // APIコール
+        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/total?yearMonth=2025-06", Map::class.java)
+
+        // 検証
+        assertThat(response.statusCode, equalTo(HttpStatus.OK))
+        assertThat(response.body?.get("totalAmount").toString(), equalTo("1500.0"))
     }
 
 }
