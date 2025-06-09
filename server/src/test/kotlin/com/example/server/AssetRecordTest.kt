@@ -17,7 +17,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AssetServiceTest  (
+class AssetRecordTest  (
     @Autowired val restTemplate: TestRestTemplate,
     @LocalServerPort val port: Int,
     @Autowired val repository: AssetRecordRepository

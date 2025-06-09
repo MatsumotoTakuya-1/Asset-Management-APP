@@ -22,7 +22,7 @@ class AssetController (
     private val asserService: AssetService
 ){
 
-    @GetMapping("/")
+    @GetMapping
     fun getTotalAsset(@RequestParam(required = false) yearMonth: String?): ResponseEntity<Map<String, Any>> {
         //year_monthがnullの場合今月に置き換え("2025-06")
         val tempYearMonth = yearMonth ?: LocalDate.now().toString().substring(0,7)
@@ -36,7 +36,7 @@ class AssetController (
 //        return asset.toList();
 //    }
 
-    @PostMapping("/")
+    @PostMapping
     fun postAssetRecord(@RequestBody request: AssetRecordRequest) {
         val parsedYearMonth = LocalDate.parse("${request.yearMonth}-01")
         val record = AssetRecord(
