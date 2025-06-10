@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -114,12 +116,19 @@ class TransactionTest  (
 
 
         // APIコール
-        val response = restTemplate.getForEntity(/* url = */ "http://localhost:$port/api/transaction/2025-06-01", /* responseType = */ List::class.java)
+//        val response = restTemplate.getForEntity(/* url = */ "http://localhost:$port/api/transaction/2025-06-01", /* responseType = */ List::class.java)
 
-        println(response.body?.get(0))
+        val response = restTemplate.exchange(
+            "http://localhost:$port/api/transaction/2025-06-01",
+            HttpMethod.GET,
+            null,
+            object : ParameterizedTypeReference<List<TransactionResponse>>() {}
+        )
+
+//        println(response.body?.get(0)?.amount)
         // 検証
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
-        assertThat(response.body?.get(0).amount, equalTo("1000.0"))
+        assertThat(response.body?.get(0)?.amount, equalTo(BigDecimal("1000.00")))
     }
 
 
