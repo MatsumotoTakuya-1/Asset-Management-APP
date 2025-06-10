@@ -9,5 +9,6 @@ import java.time.LocalDate
 interface AssetRepository : CrudRepository<Asset, Long> {
     fun findByNameAndUserId(name: String, userId: Long): Asset?
     fun findAllByUserId(userId: Long): List<Asset>
-    fun findByNameAndUser(name: String, user: User): Asset
+    fun findByNameAndUser(name: String, user: User): Asset?
+    fun findAllByUser(user: User): Asset
 }

@@ -3,9 +3,11 @@ package com.example.server.controller
 import com.example.server.domain.asset.Asset
 import com.example.server.domain.asset.AssetInputRequest
 import com.example.server.domain.asset.AssetRepository
+import com.example.server.domain.asset.MonthlyAssetSummaryResponse
 import com.example.server.domain.assetrecord.AssetRecord
 import com.example.server.domain.assetrecord.AssetRecordRepository
 import com.example.server.domain.assetrecord.AssetRecordRequest
+import com.example.server.domain.transaction.MonthlySummaryResponse
 import com.example.server.domain.user.UserRepository
 import com.example.server.service.AssetService
 import org.springframework.http.ResponseEntity
@@ -120,6 +122,12 @@ class AssetController(
         return ResponseEntity.ok("保存完了")
 
     }
+
+//    monthly-summary
+@GetMapping("/monthly-summary")
+    fun getMonthlyAssetSummary(): ResponseEntity<List<MonthlyAssetSummaryResponse>> {
+        val summary = AssetService.getMonthlySummaryByUser(1L)
+        return ResponseEntity.ok(summary)
 
 
 }

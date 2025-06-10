@@ -3,6 +3,7 @@ import TotalAssetCard from "./components/TotalAssetCard.jsx";
 import {Container, CssBaseline, Divider, ThemeProvider, Typography} from "@mui/material";
 import DashboardActions from "./components/DashboardActions.jsx";
 import IncomeExpenseChart from "./components/IncomeExpenseChart.jsx";
+import AssetTrendChart from "./components/ AssetTrendChart .jsx";
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
 
             <Typography variant={"h5"} textAlign={"left"}>Financial Overview</Typography>
             <IncomeExpenseChart/>
+            <AssetTrendChart/>
             <Divider sx={{my: 3}}/>
 
 
