@@ -1,9 +1,12 @@
 package com.example.server.controller
 
 import com.example.server.domain.asset.Asset
+import com.example.server.domain.asset.AssetInputRequest
 import com.example.server.domain.asset.AssetRepository
 import com.example.server.domain.assetrecord.AssetRecord
+import com.example.server.domain.assetrecord.AssetRecordRepository
 import com.example.server.domain.assetrecord.AssetRecordRequest
+import com.example.server.domain.user.UserRepository
 import com.example.server.service.AssetService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,7 +24,9 @@ import java.time.LocalDateTime
 @RequestMapping("/api/assets")
 class AssetController(
     private val asserService: AssetService,
-    private val assetRepository: AssetRepository
+    private val assetRepository: AssetRepository,
+    private val userRepository: UserRepository,
+    private val assetRecordRepository: AssetRecordRepository
 ) {
 
     @GetMapping("/{yearMonth}")
@@ -75,6 +80,45 @@ class AssetController(
             }
 
         return ResponseEntity.ok(grouped)
+    }
+
+    @PostMapping("/{yearMonth}")
+    fun saveAsset(
+        @PathVariable yearMonth: String,
+        @RequestBody assetInputs: List<AssetInputRequest>
+    ): ResponseEntity<String> {
+        val parsedYearMonth = LocalDate.parse(yearMonth.take(7) + "-01")
+
+        assetInputs.forEach { assetInput ->
+            //userId -> User取得
+            val user =
+                userRepository.findById(assetInput.userId).orElseThrow { IllegalArgumentException("User is not found") }
+
+            var asset = assetRepository.findByNameAndUser(assetInput.name, user)
+
+            //なければ新規作成
+            if (asset == null) {
+                asset = assetRepository.save(
+                    Asset(
+                        name = assetInput.name,
+                        assetType = "default",
+                        user = user,
+                        createdAt = LocalDateTime.now(),
+                    )
+                )
+            }
+
+            val record = AssetRecord(
+                asset = asset,
+                yearMonth = parsedYearMonth,
+                amount = assetInput.amount,
+                memo = assetInput.memo ?: "",
+                createdAt = LocalDateTime.now(),
+            )
+            assetRecordRepository.save(record)
+        }
+        return ResponseEntity.ok("保存完了")
+
     }
 
 
