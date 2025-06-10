@@ -52,6 +52,7 @@ class TransactionController(private val transactionRepository: TransactionReposi
         @RequestBody request: List<TransactionRequest>,
         @PathVariable yearMonth: String
     ): ResponseEntity<String> {
+        println("入った")
         val parsedYearMonth = LocalDate.parse(yearMonth)
         val transactions = request.map {
             val user = userRepository.findById(it.userId)

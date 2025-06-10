@@ -58,22 +58,22 @@ class TransactionTest  (
 
         val payload = listOf(
             mapOf(
-                "user_id" to user.id,
+                "userId" to user.id,
                 "amount" to "20000",
                 "memo" to "test1",
                 "category" to "案件A",
                 "type" to "income",
                 "isFixed" to true,
-                "yearMonth" to LocalDate.parse("2025-06-01"),
+                "yearMonth" to "2025-06-01",
             ),
             mapOf(
-                "user_id" to user.id,
+                "userId" to user.id,
                 "amount" to "40000",
                 "memo" to "test2",
                 "category" to "案件B",
                 "type" to "expense",
                 "isFixed" to false,
-                "yearMonth" to LocalDate.parse("2025-06-01"),
+                "yearMonth" to "2025-06-01",
             )
         )
 
@@ -85,7 +85,7 @@ class TransactionTest  (
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
 
         val saved = transactionRepository.findByYearMonth(LocalDate.parse("2025-06-01"))
-
+        assertThat(saved.size, equalTo(2))
     }
 
     @Test

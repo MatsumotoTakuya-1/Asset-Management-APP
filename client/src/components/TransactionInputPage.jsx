@@ -36,17 +36,20 @@ const TransactionInputPage = () => {
 
     const handleSubmit = async () => {
         try {
+            const yearMonth = "2025-06-01"
             const payload = categories
                 .filter((cat) => amounts[cat])
                 .map((cat) => ({
                     category: cat,
                     type: tab,
-                    amount: parseFloat(amounts[cat]),
+                    amount: amounts[cat],
+                    yearMonth: yearMonth,
                     memo:"下記はあとで実装",
                     is_fixed: false,
-                    user_id:1
+                    userId:1
+
                 }));
-            // console.log(payload);
+            console.log(payload);
 
             await axios.post(`/api/transactions/${yearMonth}`, payload);
             alert("Saved successfully");
