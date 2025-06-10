@@ -123,11 +123,11 @@ class AssetController(
 
     }
 
-//    monthly-summary
-@GetMapping("/monthly-summary")
+    //    monthly-summary
+    @GetMapping("/monthly-summary")
     fun getMonthlyAssetSummary(): ResponseEntity<List<MonthlyAssetSummaryResponse>> {
-        val summary = AssetService.getMonthlySummaryByUser(1L)
+        val summary = asserService.getMonthlySummaryByUser(1L)
         return ResponseEntity.ok(summary)
-
+    }
 
 }

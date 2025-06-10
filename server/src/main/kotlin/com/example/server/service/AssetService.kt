@@ -41,20 +41,20 @@ class AssetService(
         val user =
             userRepository.findById(userId).orElseThrow { IllegalArgumentException("User is not found") }
 
-        val asset = assetRepository.findAllByUser(user)
-        val asset_record = assetRecordRepository.findAllByAsset(asset)
+        val assets = assetRepository.findAllByUser(user)
+        val assetRecord = assetRecordRepository.findAllByAsset(assets)
 
-        return asset_record
+        return assetRecord
             .groupBy {
                 it.yearMonth.toString().substring(0, 7)
             } // "2025-06-01" → "2025-06". 2025-06: [Transaction(,,), Transaction(..)]
             .map { (month, txs) ->
-                val myasset = txs.sumOf { it.amount.toInt() }
+                val myAsset = txs.sumOf { it.amount.toInt() }
 
 
                 MonthlyAssetSummaryResponse(
                     month = month,
-                    amount = myasset,
+                    amount = myAsset,
                 )
             }
             .sortedBy { it.month }

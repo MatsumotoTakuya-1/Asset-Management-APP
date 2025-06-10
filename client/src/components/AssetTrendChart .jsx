@@ -8,7 +8,13 @@ const AssetTrendChart = () => {
     //
     useEffect(() => {
         axios.get("/api/assets/monthly-summary")
-            .then(res => setData(res.data))
+            .then(res => {
+                const formatted = res.data.map((item) => ({
+                    ...item,
+                    month: new Date(item.month + "-01").toLocaleString("default", {month: "short"})
+                }));
+                setData(formatted)
+            })
             .catch(err => console.error(err));
     }, []);
 
@@ -32,7 +38,7 @@ const AssetTrendChart = () => {
                     <Legend/>
                     <Line
                         type="monotone"
-                        dataKey="income"
+                        dataKey="amount"
                         dot={false}
                     />
                 </LineChart>

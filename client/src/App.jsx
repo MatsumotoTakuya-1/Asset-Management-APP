@@ -3,7 +3,7 @@ import TotalAssetCard from "./components/TotalAssetCard.jsx";
 import {Container, CssBaseline, Divider, ThemeProvider, Typography} from "@mui/material";
 import DashboardActions from "./components/DashboardActions.jsx";
 import IncomeExpenseChart from "./components/IncomeExpenseChart.jsx";
-import AssetTrendChart from "./components/ AssetTrendChart .jsx";
+import AssetTrendChart from "./components/AssetTrendChart .jsx";
 
 function App() {
 
