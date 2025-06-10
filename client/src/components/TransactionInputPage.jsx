@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {
     Typography,
     Box,
@@ -21,7 +21,7 @@ const incomeCategories = ["給与", "副業", "投資収益", "不動産収入",
 const expenseCategories = ["家賃", "外食", "スーパー", "交通費", "娯楽費"];
 
 const TransactionInputPage = () => {
-    const { yearMonth } = useParams();
+    const {yearMonth} = useParams();
     const [tab, setTab] = useState("income");
     const [amounts, setAmounts] = useState({});
     const [summary, setSummary] = useState({});
@@ -40,8 +40,7 @@ const TransactionInputPage = () => {
     useEffect(() => {
         const fetchSummary = async () => {
             try {
-                const yearMonth = "2025-06-01"
-
+                const yearMonth = new Date().toISOString()
                 if (!yearMonth) return;
                 const res = await axios.get(`/api/transactions/${yearMonth}/summary/${tab}`);
                 console.log(res.data);
@@ -61,7 +60,7 @@ const TransactionInputPage = () => {
     // 保存処理
     const handleSubmit = async () => {
         try {
-            const yearMonth = "2025-06-01"
+            const yearMonth = new Date().toISOString()
             const payload = categories
                 .filter((cat) => amounts[cat])
                 .map((cat) => ({
@@ -69,9 +68,9 @@ const TransactionInputPage = () => {
                     type: tab,
                     amount: amounts[cat],
                     yearMonth: yearMonth,
-                    memo:"下記はあとで実装",
+                    memo: "下記はあとで実装",
                     is_fixed: false,
-                    userId:1
+                    userId: 1
 
                 }));
             console.log(payload);
@@ -89,12 +88,12 @@ const TransactionInputPage = () => {
                 収入 & 支出 - {yearMonth}
             </Typography>
 
-            <Tabs value={tab} onChange={(_, newValue) => setTab(newValue)} sx={{ mb: 2 }}>
-                <Tab label="収入" value="income" />
-                <Tab label="支出" value="expense" />
+            <Tabs value={tab} onChange={(_, newValue) => setTab(newValue)} sx={{mb: 2}}>
+                <Tab label="収入" value="income"/>
+                <Tab label="支出" value="expense"/>
             </Tabs>
 
-            <TableContainer component={Paper} sx={{ mb: 2 }}>
+            <TableContainer component={Paper} sx={{mb: 2}}>
                 <Table>
                     <TableHead>
                         <TableRow>
