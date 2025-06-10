@@ -62,12 +62,16 @@ class AssetController(
     ): ResponseEntity<Map<String, BigDecimal>> {
         val setYearMonth = yearMonth.take(7)
         val parsedYearMonth = LocalDate.parse("$setYearMonth-01")
+        println(parsedYearMonth)
+
         val asset = assetRepository.findAllByUserId(1L)
+        println(asset)
         val asset_record = asserService.getFromMemory(asset, parsedYearMonth)
 
-        val grouped = asset_record.groupBy { it?.asset?.name }
+        println(asset_record)
+        val grouped = asset_record.groupBy { it.asset.name }
             .mapValues { entry ->
-                entry.value.fold(BigDecimal.ZERO) { acc, t -> acc + t?.amount }
+                entry.value.fold(BigDecimal.ZERO) { acc, t -> acc + t.amount }
             }
 
         return ResponseEntity.ok(grouped)

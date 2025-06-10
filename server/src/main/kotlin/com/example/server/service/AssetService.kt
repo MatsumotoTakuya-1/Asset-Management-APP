@@ -12,9 +12,9 @@ class AssetService(
     private val repository: AssetRecordRepository
 ) {
 
-    fun getFromMemory(asset: Asset, yearMonth: LocalDate): List<AssetRecord?> {
+    fun getFromMemory(assets: List<Asset>, yearMonth: LocalDate): List<AssetRecord> {
         return repository.findAll()
-            .filter { it.asset == asset }
+            .filter { it.asset in assets }
             .filter { it.yearMonth == yearMonth }
     }
 

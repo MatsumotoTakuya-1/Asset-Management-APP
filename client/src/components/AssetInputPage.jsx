@@ -44,9 +44,10 @@ const AssetInputPage = () => {
                 // console.log(last_month) //2025-05-09T15:00:00.000Z
                 if (!last_month) return;
                 const res = await axios.get(`/api/assets/${last_month}/summary`);
+                console.log(res.data);
                 setSummary(res.data);
             } catch (err) {
-                console.error("カテゴリ合計取得失敗", err);
+                console.error("先月の資産合計取得失敗", err);
             }
         };
 
@@ -54,29 +55,26 @@ const AssetInputPage = () => {
     }, [yearMonth]);
 
     // 保存処理
-    // const handleSubmit = async () => {
-    //     try {
-    //         const yearMonth = new Date().toISOString()
-    //         const payload = categories
-    //             .filter((cat) => amounts[cat])
-    //             .map((cat) => ({
-    //                 category: cat,
-    //                 type: tab,
-    //                 amount: amounts[cat],
-    //                 yearMonth: yearMonth,
-    //                 memo: "下記はあとで実装",
-    //                 is_fixed: false,
-    //                 userId: 1
-    //
-    //             }));
-    //         console.log(payload);
-    //
-    //         await axios.post(`/api/transactions/${yearMonth}`, payload);
-    //         alert("Saved successfully");
-    //     } catch (err) {
-    //         console.error("Save failed", err);
-    //     }
-    // };
+    const handleSubmit = async () => {
+        try {
+            const yearMonth = new Date().toISOString()
+            const payload = assetCategories
+                .filter((asset) => amounts[asset])
+                .map((asset) => ({
+                    name: asset,
+                    userId: 1,
+                    amount: amounts[asset],
+                    yearMonth: yearMonth,
+                    memo: "下記はあとで実装",
+                }));
+            console.log(payload);
+
+            await axios.post(`/api/assets/${yearMonth}`, payload);
+            alert("Saved successfully");
+        } catch (err) {
+            console.error("Save failed", err);
+        }
+    };
 
     return (
         <Box>
@@ -111,9 +109,9 @@ const AssetInputPage = () => {
             </TableContainer>
 
             <Box textAlign="right">
-                {/*<Button variant="contained" color="primary" onClick={handleSubmit}>*/}
-                {/*    Save*/}
-                {/*</Button>*/}
+                <><Button variant="contained" color="primary" onClick={handleSubmit}>
+                    Save
+                </Button></>
             </Box>
         </Box>
     );

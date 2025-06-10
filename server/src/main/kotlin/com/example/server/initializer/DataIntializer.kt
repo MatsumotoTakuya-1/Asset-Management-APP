@@ -39,40 +39,74 @@ class DataInitializer {
             )
         )
 
-        val asset = assetRepo.findByNameAndUserId("SBI証券", user.id!!) ?: assetRepo.save(
+        val asset1 = assetRepo.findByNameAndUserId("銀行", user.id!!) ?: assetRepo.save(
             Asset(
                 user = user,
-                name = "SBI証券",
+                name = "銀行",
+                assetType = "bank",
+                createdAt = LocalDateTime.now()
+            )
+        )
+
+        val asset2 = assetRepo.findByNameAndUserId("証券", user.id!!) ?: assetRepo.save(
+            Asset(
+                user = user,
+                name = "証券",
                 assetType = "stock",
                 createdAt = LocalDateTime.now()
             )
         )
+        if (assetRepo.count() == 0L) {
+            assetRepo.saveAll(
+                listOf(
+                    Asset(
+                        user = user,
+                        name = "不動産",
+                        assetType = "rent",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Asset(
+                        user = user,
+                        name = "仮想通貨",
+                        assetType = "crypt",
+                        createdAt = LocalDateTime.now()
+                    ),
+                )
+            )
+        }
 
         // 資産データがなければ登録
         if (assetRecoRepo.count() == 0L) {
             assetRecoRepo.saveAll(
                 listOf(
                     AssetRecord(
-                        asset = asset,
+                        asset = asset1,
                         yearMonth = LocalDate.parse("2025-06-01"),
                         amount = BigDecimal("10000"),
                         memo = "預金",
                         createdAt = LocalDateTime.now()
                     ),
                     AssetRecord(
-                        asset = asset,
+                        asset = asset1,
                         yearMonth = LocalDate.parse("2025-06-01"),
                         amount = BigDecimal("30000"),
                         memo = "証券",
                         createdAt = LocalDateTime.now()
                     ),
                     AssetRecord(
-                        asset = asset,
+                        asset = asset1,
                         yearMonth = LocalDate.parse("2025-05-01"),
                         amount = BigDecimal("20000"),
                         memo = "先月の資産",
                         createdAt = LocalDateTime.now()
-                    )
+                    ),
+                    AssetRecord(
+                        asset = asset2,
+                        yearMonth = LocalDate.parse("2025-05-01"),
+                        amount = BigDecimal("100000"),
+                        memo = "先月の資産",
+                        createdAt = LocalDateTime.now()
+                    ),
                 )
             )
         }
