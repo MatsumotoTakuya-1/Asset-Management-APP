@@ -1,21 +1,100 @@
 import { useParams } from "react-router-dom";
-import { Typography, Box } from "@mui/material";
+import {
+    Typography,
+    Box,
+    Tabs,
+    Tab,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Button,
+    Paper,
+} from "@mui/material";
+import { useState } from "react";
+import axios from "axios";
 import TransactionInputRow from "../components/TransactionInputRow";
 
-const categories = ["Salary", "Freelance", "Investments", "Rental Income", "Other"];
+const incomeCategories = ["給与", "副業", "投資収益", "不動産収入", "その他"];
+const expenseCategories = ["家賃", "外食", "スーパー", "交通費", "娯楽費"];
 
 const TransactionInputPage = () => {
     const { yearMonth } = useParams();
+    const [tab, setTab] = useState("income");
+    const [amounts, setAmounts] = useState({});
+
+    const categories = tab === "income" ? incomeCategories : expenseCategories;
+
+    const handleAmountChange = (category, value) => {
+        setAmounts((prev) => ({
+            ...prev,
+            [category]: value,
+        }));
+    };
+
+    const handleSubmit = async () => {
+        try {
+            const payload = categories
+                .filter((cat) => amounts[cat])
+                .map((cat) => ({
+                    category: cat,
+                    type: tab,
+                    amount: parseFloat(amounts[cat]),
+                    memo:"下記はあとで実装",
+                    is_fixed: false,
+                    user_id:1
+                }));
+            // console.log(payload);
+
+            await axios.post(`/api/transactions/${yearMonth}`, payload);
+            alert("Saved successfully");
+        } catch (err) {
+            console.error("Save failed", err);
+        }
+    };
 
     return (
         <Box>
             <Typography variant="h5" textAlign={"left"} gutterBottom>
-                Income & Expenses - {yearMonth}
+                収入 & 支出 - {yearMonth}
             </Typography>
 
-            {categories.map((cat) => (
-                <TransactionInputRow key={cat} category={cat} yearMonth={yearMonth} />
-            ))}
+            <Tabs value={tab} onChange={(_, newValue) => setTab(newValue)} sx={{ mb: 2 }}>
+                <Tab label="収入" value="income" />
+                <Tab label="支出" value="expense" />
+            </Tabs>
+
+            <TableContainer component={Paper} sx={{ mb: 2 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Category</TableCell>
+                            <TableCell>Amount</TableCell>
+                            <TableCell>Total for Month</TableCell>
+                            <TableCell>History</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {categories.map((cat) => (
+                            <TransactionInputRow
+                                key={cat}
+                                category={cat}
+                                yearMonth={yearMonth}
+                                value={amounts[cat] || ""}
+                                onChange={(val) => handleAmountChange(cat, val)}
+                            />
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            <Box textAlign="right">
+                <Button variant="contained" color="primary" onClick={handleSubmit}>
+                    Save
+                </Button>
+            </Box>
         </Box>
     );
 };
