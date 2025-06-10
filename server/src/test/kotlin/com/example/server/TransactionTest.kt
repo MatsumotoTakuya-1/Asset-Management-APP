@@ -4,8 +4,10 @@ package com.example.server
 import com.example.server.domain.asset.Asset
 import com.example.server.domain.transaction.Transaction
 import com.example.server.domain.transaction.TransactionRepository
+import com.example.server.domain.transaction.TransactionResponse
 import com.example.server.domain.user.User
 import com.example.server.domain.user.UserRepository
+import net.bytebuddy.matcher.ElementMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
@@ -40,10 +42,52 @@ class TransactionTest  (
     @Test
     fun contextLoads() {
     }
+    @Test
+    fun `POSTで複数トランザクションが保存される`(){
+        val user = userRepository.save(
+            User(
+                name = "テストマン",
+                email = "a@example.com",
+                salt = "salt1",
+                password = "pass1",
+                createdAt = LocalDateTime.now()
+            )
+        )
+
+        val payload = listOf(
+            mapOf(
+                "user_id" to user.id,
+                "amount" to "20000",
+                "memo" to "test1",
+                "category" to "案件A",
+                "type" to "income",
+                "isFixed" to true,
+                "yearMonth" to LocalDate.parse("2025-06-01"),
+            ),
+            mapOf(
+                "user_id" to user.id,
+                "amount" to "40000",
+                "memo" to "test2",
+                "category" to "案件B",
+                "type" to "expense",
+                "isFixed" to false,
+                "yearMonth" to LocalDate.parse("2025-06-01"),
+            )
+        )
+
+        val response = restTemplate.postForEntity(
+            "http://localhost:$port/api/transaction/2025-06-01",
+            payload,
+            String::class.java
+        )
+        assertThat(response.statusCode, equalTo(HttpStatus.OK))
+
+        val saved = transactionRepository.findByYearMonth(LocalDate.parse("2025-06-01"))
+
+    }
 
     @Test
     fun `POSTした情報がtransactionエンティティに入っているか`() {
-        // Asset を作成して保存（asset_id = 1, 2 の代わり）
         val user = userRepository.save(
                     User(
                         name = "User A",
@@ -70,11 +114,12 @@ class TransactionTest  (
 
 
         // APIコール
-        val response = restTemplate.getForEntity("http://localhost:$port/api/transaction/2025-06-01", Map::class.java)
+        val response = restTemplate.getForEntity(/* url = */ "http://localhost:$port/api/transaction/2025-06-01", /* responseType = */ List::class.java)
 
+        println(response.body?.get(0))
         // 検証
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
-//        assertThat(response.body?.get("totalAmount").toString(), equalTo("1500.0"))
+        assertThat(response.body?.get(0).amount, equalTo("1000.0"))
     }
 
 
