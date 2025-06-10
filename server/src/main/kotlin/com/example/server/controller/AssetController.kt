@@ -1,10 +1,13 @@
 package com.example.server.controller
 
+import com.example.server.domain.asset.Asset
+import com.example.server.domain.asset.AssetRepository
 import com.example.server.domain.assetrecord.AssetRecord
 import com.example.server.domain.assetrecord.AssetRecordRequest
 import com.example.server.service.AssetService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,11 +19,12 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/assets")
 class AssetController (
-    private val asserService: AssetService
+    private val asserService: AssetService,
+    private val assetRepository: AssetRepository
 ){
 
     @GetMapping
-    fun getTotalAsset(@RequestParam(required = false) yearMonth: String?): ResponseEntity<Map<String, Any>> {
+    fun getTotalAsset(@PathVariable yearMonth: String?): ResponseEntity<Map<String, Any>> {
         //year_monthがnullの場合今月に置き換え("2025-06")
         val tempYearMonth = yearMonth ?: LocalDate.now().toString().substring(0,7)
         val parsedYearMonth = LocalDate.parse("$tempYearMonth-01")
@@ -36,8 +40,12 @@ class AssetController (
     @PostMapping
     fun postAssetRecord(@RequestBody request: AssetRecordRequest) {
         val parsedYearMonth = LocalDate.parse("${request.yearMonth}-01")
+
+        //assetIdからAssetを取得
+        val asset = assetRepository.findById(request.assetId).orElseThrow { IllegalArgumentException("Asset is not found") }
+
         val record = AssetRecord(
-            asset = request.assetId,
+            asset = asset,
             yearMonth = parsedYearMonth,
             amount = request.amount,
             memo = request.memo,

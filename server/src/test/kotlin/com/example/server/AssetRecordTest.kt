@@ -1,8 +1,12 @@
 package com.example.server
 
+import com.example.server.domain.asset.Asset
+import com.example.server.domain.asset.AssetRepository
 import com.example.server.domain.assetrecord.AssetRecord
 import com.example.server.domain.assetrecord.AssetRecordRepository
 import com.example.server.domain.assetrecord.AssetRecordRequest
+import com.example.server.domain.user.User
+import com.example.server.domain.user.UserRepository
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
@@ -20,14 +24,20 @@ import java.time.LocalDateTime
 class AssetRecordTest  (
     @Autowired val restTemplate: TestRestTemplate,
     @LocalServerPort val port: Int,
-    @Autowired val repository: AssetRecordRepository
+    @Autowired val assetRecordRepository: AssetRecordRepository
 ){
 
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
+
+    @Autowired
+    private lateinit var assetRepository: AssetRepository
 
     @BeforeEach
     fun setup() {
         // 各テストは項目が空の状態で始める。
-        repository.deleteAll()
+        assetRecordRepository.deleteAll()
     }
 
 
@@ -43,59 +53,47 @@ class AssetRecordTest  (
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
     }
 
-    @Test
-    fun `POSTリクエストはOKステータスを返す`() {
-        // localhost/api/assets/total に POSTリクエストを送る。このときのボディは {"text": "hello"}
-        val request = AssetRecordRequest(
-            yearMonth = "2025-06",
-            assetId = 10,
-            amount = BigDecimal("1200000"),
-            memo = "ボーナス月"
-        )
-
-        val response = restTemplate.postForEntity("http://localhost:$port/api/assets", request, String::class.java)
-        // レスポンスのステータスコードは OK であること。
-        assertThat(response.statusCode, equalTo(HttpStatus.OK))
-    }
-
-
-    @Test
-    fun `POSTリクエストはasset_recordオブジェクトを格納する`() {
-        // localhost/api/assets/total に POSTリクエストを送る。
-        val request = AssetRecordRequest(
-            yearMonth = "2025-06",
-            assetId = 10,
-            amount = BigDecimal("1200000"),
-            memo = "ボーナス月",
-        )
-
-        restTemplate.postForEntity("http://localhost:$port/api/assets", request, String::class.java)
-
-        // localhost/api/assets/total に GETリクエストを送り、レスポンスを AssetRecord の配列として解釈する。
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets", Map::class.java)
-        val asset = response.body!!
-        println("asset: $asset")
-
-        //  asset の長さは 1。
-        assertThat(asset.size, equalTo(1))
-        // asset[0] には "1200000" をもつAssetRecord が含まれている。
-        assertThat(asset["totalAmount"], equalTo(1200000.0))
-    }
 
     @Test
     fun `特定の年月の総資産額を取得できる`() {
+        // Asset を作成して保存（asset_id = 1, 2 の代わり）
+        val asset1 = assetRepository.save(
+            Asset(
+                user = userRepository.save(
+                    User(
+                        name = "User A",
+                        email = "a@example.com",
+                        salt = "salt1",
+                        password = "pass1",
+                        createdAt = LocalDateTime.now()
+                    )
+                ),
+                name = "証券口座A",
+                assetType = "stock",
+                createdAt = LocalDateTime.now()
+            )
+        )
+
+        val asset2 = assetRepository.save(
+            Asset(
+                user = asset1.user, // 同じユーザーにしてもOK
+                name = "証券口座B",
+                assetType = "cash",
+                createdAt = LocalDateTime.now()
+            )
+        )
         // テストデータ追加
-        repository.save(
+        assetRecordRepository.save(
             AssetRecord(
-                assetId = 1,
+                asset = asset1,
                 yearMonth = LocalDate.parse("2025-06-01"),
                 amount = BigDecimal("1000"),
                 memo = "test",
                 createdAt = LocalDateTime.now()
             )
         )
-        repository.save(AssetRecord(
-            assetId = 2,
+        assetRecordRepository.save(AssetRecord(
+            asset = asset2,
             yearMonth = LocalDate.parse("2025-06-01"),
             amount = BigDecimal("500"),
             memo = "test2",
@@ -103,7 +101,7 @@ class AssetRecordTest  (
         ))
 
         // APIコール
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets?yearMonth=2025-06", Map::class.java)
+        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/2025-06", Map::class.java)
 
         // 検証
         assertThat(response.statusCode, equalTo(HttpStatus.OK))

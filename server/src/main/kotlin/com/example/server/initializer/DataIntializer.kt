@@ -29,7 +29,7 @@ class DataInitializer {
     ) = CommandLineRunner {
 
         // 必ずユーザーを取得
-        val user = userRepo.findAll().firstOrNull() ?: userRepo.save(
+        val user = userRepo.findByEmail("test@example.com") ?: userRepo.save(
             User(
                 name = "テストユーザー",
                 email = "test@example.com",
@@ -39,7 +39,7 @@ class DataInitializer {
             )
         )
 
-        val asset = assetRepo.findAll().firstOrNull() ?: assetRepo.save(
+        val asset = assetRepo.findByNameAndUserId("SBI証券",user.id!!) ?: assetRepo.save(
             Asset(
                 user=user,
                 name = "SBI証券",
