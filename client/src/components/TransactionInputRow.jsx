@@ -2,7 +2,7 @@ import { TableRow, TableCell, TextField, Button } from "@mui/material";
 import { useState } from "react";
 import TransactionHistoryModal from "./TransactionHistoryModal";
 
-const TransactionInputRow = ({ category, yearMonth, value, onChange }) => {
+const TransactionInputRow = ({ category, yearMonth, value, onChange,totalForMonth }) => {
     const [openModal, setOpenModal] = useState(false);
 
     return (
@@ -19,7 +19,9 @@ const TransactionInputRow = ({ category, yearMonth, value, onChange }) => {
                     />
                 </TableCell>
                 <TableCell>
-                    {value ? `￥${parseFloat(value).toLocaleString()}` : "-"}
+                    {totalForMonth !== undefined
+                        ? `￥${Number(totalForMonth).toLocaleString()}`
+                        : "-"}
                 </TableCell>
                 <TableCell>
                     <Button size="small" variant="outlined" onClick={() => setOpenModal(true)}>

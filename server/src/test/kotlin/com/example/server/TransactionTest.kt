@@ -78,7 +78,7 @@ class TransactionTest  (
         )
 
         val response = restTemplate.postForEntity(
-            "http://localhost:$port/api/transaction/2025-06-01",
+            "http://localhost:$port/api/transactions/2025-06-01",
             payload,
             String::class.java
         )
@@ -119,7 +119,7 @@ class TransactionTest  (
 //        val response = restTemplate.getForEntity(/* url = */ "http://localhost:$port/api/transaction/2025-06-01", /* responseType = */ List::class.java)
 
         val response = restTemplate.exchange(
-            "http://localhost:$port/api/transaction/2025-06-01",
+            "http://localhost:$port/api/transactions/2025-06-01",
             HttpMethod.GET,
             null,
             object : ParameterizedTypeReference<List<TransactionResponse>>() {}

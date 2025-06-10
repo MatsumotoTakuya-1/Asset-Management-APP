@@ -12,15 +12,17 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @RestController
-@RequestMapping("/api/transaction")
+@RequestMapping("/api/transactions")
 class TransactionController(private val transactionRepository: TransactionRepository,
                             private val userRepository: UserRepository
 ) {
 
+    // 一覧取得
     @GetMapping("/{yearMonth}")
     fun getTotalAsset(@PathVariable yearMonth: String?): ResponseEntity<List<TransactionResponse>?> {
         val tempYearMonth = yearMonth ?: LocalDate.now().toString()
@@ -47,12 +49,13 @@ class TransactionController(private val transactionRepository: TransactionReposi
         return ResponseEntity.ok(response)
     }
 
+    // 登録
     @PostMapping("/{yearMonth}")
     fun postTransaction(
         @RequestBody request: List<TransactionRequest>,
         @PathVariable yearMonth: String
     ): ResponseEntity<String> {
-        println("入った")
+//        println("入った")
         val parsedYearMonth = LocalDate.parse(yearMonth)
         val transactions = request.map {
             val user = userRepository.findById(it.userId)
@@ -72,8 +75,24 @@ class TransactionController(private val transactionRepository: TransactionReposi
 
         transactionRepository.saveAll(transactions)
         return ResponseEntity.ok("Saved ${transactions.size} records" )
+    }
 
+    // 合計取得（カテゴリ別）
+    @GetMapping("/{yearMonth}/summary/{tab}")
+    fun getMonthlySummary(
+        @PathVariable yearMonth: String,
+        @PathVariable tab: String
+    ): ResponseEntity<Map<String, BigDecimal>> {
+        val parsedYearMonth = LocalDate.parse(yearMonth)
+        val transactions = transactionRepository.findByYearMonth(parsedYearMonth)
+            .filter { it.type == tab }
 
+        val grouped = transactions.groupBy { it.category }
+            .mapValues { entry ->
+                entry.value.fold(BigDecimal.ZERO) { acc, t -> acc + t.amount }
+            }
+
+        return ResponseEntity.ok(grouped)
     }
 
 

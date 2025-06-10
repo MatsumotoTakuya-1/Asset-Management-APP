@@ -13,7 +13,7 @@ import {
     Button,
     Paper,
 } from "@mui/material";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import TransactionInputRow from "../components/TransactionInputRow";
 
@@ -24,9 +24,11 @@ const TransactionInputPage = () => {
     const { yearMonth } = useParams();
     const [tab, setTab] = useState("income");
     const [amounts, setAmounts] = useState({});
+    const [summary, setSummary] = useState({});
 
     const categories = tab === "income" ? incomeCategories : expenseCategories;
 
+    // 金額入力の変更を処理
     const handleAmountChange = (category, value) => {
         setAmounts((prev) => ({
             ...prev,
@@ -34,6 +36,29 @@ const TransactionInputPage = () => {
         }));
     };
 
+    // 合計取得API呼び出し
+    useEffect(() => {
+        const fetchSummary = async () => {
+            try {
+                const yearMonth = "2025-06-01"
+
+                if (!yearMonth) return;
+                const res = await axios.get(`/api/transactions/${yearMonth}/summary/${tab}`);
+                console.log(res.data);
+                // const mapped = {};
+                // res.data.forEach(item => {
+                //     mapped[item.category] = item.totalAmount;
+                // });
+                setSummary(res.data);
+            } catch (err) {
+                console.error("カテゴリ合計取得失敗", err);
+            }
+        };
+
+        fetchSummary();
+    }, [yearMonth, tab]);
+
+    // 保存処理
     const handleSubmit = async () => {
         try {
             const yearMonth = "2025-06-01"
@@ -87,6 +112,7 @@ const TransactionInputPage = () => {
                                 yearMonth={yearMonth}
                                 value={amounts[cat] || ""}
                                 onChange={(val) => handleAmountChange(cat, val)}
+                                totalForMonth={summary[cat] || 0}
                             />
                         ))}
                     </TableBody>
