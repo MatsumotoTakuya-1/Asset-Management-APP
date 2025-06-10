@@ -1,10 +1,13 @@
 package com.example.server.controller
 
+import com.example.server.domain.transaction.MonthlySummaryResponse
 import com.example.server.domain.transaction.Transaction
 import com.example.server.domain.transaction.TransactionRepository
 import com.example.server.domain.transaction.TransactionRequest
 import com.example.server.domain.transaction.TransactionResponse
+import com.example.server.domain.user.User
 import com.example.server.domain.user.UserRepository
+import com.example.server.service.TransactionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -18,15 +21,17 @@ import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api/transactions")
-class TransactionController(private val transactionRepository: TransactionRepository,
-                            private val userRepository: UserRepository
+class TransactionController(
+    private val transactionRepository: TransactionRepository,
+    private val userRepository: UserRepository,
+    private val transactionService: TransactionService
 ) {
 
     // 一覧取得
     @GetMapping("/{yearMonth}")
     fun getTotalAsset(@PathVariable yearMonth: String?): ResponseEntity<List<TransactionResponse>?> {
-        val tempYearMonth = yearMonth ?: LocalDate.now().toString()
-        val parsedYearMonth = LocalDate.parse(tempYearMonth)
+        val setYearMonth = yearMonth?.take(7) //2025-06-30 -> 2025-06
+        val parsedYearMonth = LocalDate.parse("$setYearMonth-01")
 
 
         val transactions = transactionRepository.findByYearMonth(parsedYearMonth)
@@ -56,10 +61,11 @@ class TransactionController(private val transactionRepository: TransactionReposi
         @PathVariable yearMonth: String
     ): ResponseEntity<String> {
 //        println("入った")
-        val parsedYearMonth = LocalDate.parse(yearMonth)
+        val setYearMonth = yearMonth.take(7) //2025-06-30 -> 2025-06
+        val parsedYearMonth = LocalDate.parse("$setYearMonth-01")//何が来ても１日に固定
         val transactions = request.map {
             val user = userRepository.findById(it.userId)
-                .orElseThrow{ IllegalArgumentException("User is not found") }
+                .orElseThrow { IllegalArgumentException("User is not found") }
 
             Transaction(
                 user = user,
@@ -74,7 +80,7 @@ class TransactionController(private val transactionRepository: TransactionReposi
         }
 
         transactionRepository.saveAll(transactions)
-        return ResponseEntity.ok("Saved ${transactions.size} records" )
+        return ResponseEntity.ok("Saved ${transactions.size} records")
     }
 
     // 合計取得（カテゴリ別）
@@ -83,7 +89,8 @@ class TransactionController(private val transactionRepository: TransactionReposi
         @PathVariable yearMonth: String,
         @PathVariable tab: String
     ): ResponseEntity<Map<String, BigDecimal>> {
-        val parsedYearMonth = LocalDate.parse(yearMonth)
+        val setYearMonth = yearMonth.take(7)
+        val parsedYearMonth = LocalDate.parse("$setYearMonth-01")
         val transactions = transactionRepository.findByYearMonth(parsedYearMonth)
             .filter { it.type == tab }
 
@@ -93,6 +100,13 @@ class TransactionController(private val transactionRepository: TransactionReposi
             }
 
         return ResponseEntity.ok(grouped)
+    }
+
+    @GetMapping("/monthly-summary")
+    fun getMonthlySummary(): ResponseEntity<List<MonthlySummaryResponse>> {
+
+        val summary = transactionService.getMonthlySummaryByUser(1L)
+        return ResponseEntity.ok(summary)
     }
 
 

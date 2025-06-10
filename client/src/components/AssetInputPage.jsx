@@ -18,7 +18,8 @@ import axios from "axios";
 import TransactionInputRow from "../components/TransactionInputRow";
 import AssetInputRow from "./AssetInputRow.jsx";
 
-const assetCategories = [{"銀行": "bank", "証券": "stock", "仮想通貨": "crypto", "不動産": "rent", "その他": "other"}];
+const assetCategories = ["銀行", "証券", "仮想通貨", "不動産", "その他"];
+// const assetTypes = ["bank", "stock", "crypto", "rent", "other"];
 
 const AssetInputPage = () => {
     const {yearMonth} = useParams();
@@ -34,13 +35,15 @@ const AssetInputPage = () => {
         }));
     };
 
-    // 合計取得API呼び出し
+    // 先月API呼び出し
     useEffect(() => {
         const fetchSummary = async () => {
             try {
-                const yearMonth = new Date().toISOString()
-                if (!yearMonth) return;
-                const res = await axios.get(`/api/transactions/${yearMonth}/summary/${tab}`);
+                const date = new Date();
+                const last_month = new Date(date.getFullYear(), date.getMonth() - 1, date.getDate()).toISOString();
+                // console.log(last_month) //2025-05-09T15:00:00.000Z
+                if (!last_month) return;
+                const res = await axios.get(`/api/assets/${last_month}/summary`);
                 setSummary(res.data);
             } catch (err) {
                 console.error("カテゴリ合計取得失敗", err);
@@ -87,10 +90,8 @@ const AssetInputPage = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>名前</TableCell>
-                            <TableCell>種別</TableCell>
                             <TableCell>現在値</TableCell>
                             <TableCell>先月の値</TableCell>
-                            <TableCell>先月からの変化率</TableCell>
                             <TableCell>History</TableCell>
                         </TableRow>
                     </TableHead>

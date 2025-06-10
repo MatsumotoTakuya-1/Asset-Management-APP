@@ -39,9 +39,9 @@ class DataInitializer {
             )
         )
 
-        val asset = assetRepo.findByNameAndUserId("SBI証券",user.id!!) ?: assetRepo.save(
+        val asset = assetRepo.findByNameAndUserId("SBI証券", user.id!!) ?: assetRepo.save(
             Asset(
-                user=user,
+                user = user,
                 name = "SBI証券",
                 assetType = "stock",
                 createdAt = LocalDateTime.now()
@@ -52,9 +52,27 @@ class DataInitializer {
         if (assetRecoRepo.count() == 0L) {
             assetRecoRepo.saveAll(
                 listOf(
-                    AssetRecord(asset = asset, yearMonth = LocalDate.parse("2025-06-01"), amount = BigDecimal("10000"), memo = "預金", createdAt = LocalDateTime.now()),
-                    AssetRecord(asset = asset, yearMonth = LocalDate.parse("2025-06-01"), amount = BigDecimal("30000"), memo = "証券", createdAt = LocalDateTime.now()),
-                    AssetRecord(asset = asset, yearMonth = LocalDate.parse("2025-05-01"), amount = BigDecimal("20000"), memo = "先月の資産", createdAt = LocalDateTime.now())
+                    AssetRecord(
+                        asset = asset,
+                        yearMonth = LocalDate.parse("2025-06-01"),
+                        amount = BigDecimal("10000"),
+                        memo = "預金",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    AssetRecord(
+                        asset = asset,
+                        yearMonth = LocalDate.parse("2025-06-01"),
+                        amount = BigDecimal("30000"),
+                        memo = "証券",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    AssetRecord(
+                        asset = asset,
+                        yearMonth = LocalDate.parse("2025-05-01"),
+                        amount = BigDecimal("20000"),
+                        memo = "先月の資産",
+                        createdAt = LocalDateTime.now()
+                    )
                 )
             )
         }
@@ -63,9 +81,186 @@ class DataInitializer {
         if (transactionRepo.count() == 0L) {
             transactionRepo.saveAll(
                 listOf(
-                    Transaction(user = user, yearMonth = LocalDate.parse("2025-06-01"), category = "給与", type = "income", isFixed = true, amount = BigDecimal("250000"), memo = "月給", createdAt = LocalDateTime.now()),
-                    Transaction(user = user, yearMonth = LocalDate.parse("2025-06-01"), category = "家賃", type = "expense", isFixed = true, amount = BigDecimal("70000"), memo = "固定費", createdAt = LocalDateTime.now()),
-                    Transaction(user = user, yearMonth = LocalDate.parse("2025-06-01"), category = "外食", type = "expense", isFixed = false, amount = BigDecimal("4000"), memo = "友人と夕食", createdAt = LocalDateTime.now())
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-01-01"),
+                        category = "給与",
+                        type = "income",
+                        isFixed = true,
+                        amount = BigDecimal("250000"),
+                        memo = "月給",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-02-01"),
+                        category = "給与",
+                        type = "income",
+                        isFixed = true,
+                        amount = BigDecimal("250000"),
+                        memo = "月給",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-03-01"),
+                        category = "給与",
+                        type = "income",
+                        isFixed = true,
+                        amount = BigDecimal("250000"),
+                        memo = "月給",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-04-01"),
+                        category = "給与",
+                        type = "income",
+                        isFixed = true,
+                        amount = BigDecimal("250000"),
+                        memo = "月給",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-05-01"),
+                        category = "給与",
+                        type = "income",
+                        isFixed = true,
+                        amount = BigDecimal("250000"),
+                        memo = "月給",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-06-01"),
+                        category = "給与",
+                        type = "income",
+                        isFixed = true,
+                        amount = BigDecimal("250000"),
+                        memo = "月給",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-06-01"),
+                        category = "家賃",
+                        type = "expense",
+                        isFixed = true,
+                        amount = BigDecimal("70000"),
+                        memo = "固定費",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-06-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-05-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-05-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-04-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-05-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-03-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-02-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-01-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-04-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-03-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
+                    Transaction(
+                        user = user,
+                        yearMonth = LocalDate.parse("2025-02-01"),
+                        category = "外食",
+                        type = "expense",
+                        isFixed = false,
+                        amount = BigDecimal("4000"),
+                        memo = "友人と夕食",
+                        createdAt = LocalDateTime.now()
+                    ),
                 )
             )
         }

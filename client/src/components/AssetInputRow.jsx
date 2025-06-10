@@ -1,10 +1,10 @@
 import {TableRow, TableCell, TextField, Button} from "@mui/material";
-import {useState} from "react";
-import TransactionHistoryModal from "./TransactionHistoryModal";
+// import {useState} from "react";
+import {useNavigate} from "react-router";
+
 
 const AssetInputRow = ({assetName, yearMonth, value, onChange, totalForMonth}) => {
-    const [openModal, setOpenModal] = useState(false);
-
+    const navigate = useNavigate();
     return (
         <>
             <TableRow>
@@ -24,19 +24,14 @@ const AssetInputRow = ({assetName, yearMonth, value, onChange, totalForMonth}) =
                         : "-"}
                 </TableCell>
                 <TableCell>
-                    <Button size="small" variant="outlined" onClick={() => setOpenModal(true)}>
+                    <Button size="small" variant="outlined" onClick={() => navigate("/")}>
                         View History
                     </Button>
+                    {/*/input/assets/:yearMonth/:assetId/historyに遷移予定*/}
                 </TableCell>
             </TableRow>
 
-            {/* モーダルコンポーネント（非表示時はレンダリングしない） */}
-            <TransactionHistoryModal
-                open={openModal}
-                onClose={() => setOpenModal(false)}
-                category={assetName}
-                yearMonth={yearMonth}
-            />
+
         </>
     );
 };

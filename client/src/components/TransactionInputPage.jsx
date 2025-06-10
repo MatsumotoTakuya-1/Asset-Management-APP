@@ -43,7 +43,7 @@ const TransactionInputPage = () => {
                 const yearMonth = new Date().toISOString()
                 if (!yearMonth) return;
                 const res = await axios.get(`/api/transactions/${yearMonth}/summary/${tab}`);
-                console.log(res.data);
+                console.log(res.data);//{家賃: 170000, 外食: 4000}
                 // const mapped = {};
                 // res.data.forEach(item => {
                 //     mapped[item.category] = item.totalAmount;
