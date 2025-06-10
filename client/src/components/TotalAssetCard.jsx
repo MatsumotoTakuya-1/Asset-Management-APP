@@ -28,12 +28,12 @@ function TotalAssetCard() {
 
     return (
         <Card>
-            <CardContent>
-                <Typography>総資産額</Typography>
+            <CardContent >
+                <Typography textAlign={"left"}>総資産額</Typography>
                 {loading ? (
                     <CircularProgress />
                 ) : (
-                    <Typography variant="body2" color="textSecondary">
+                    <Typography variant="body2" color="textSecondary" textAlign={"left"}  >
                       ￥{total?.toLocaleString() ?? 0}
                     </Typography>
                 )}
