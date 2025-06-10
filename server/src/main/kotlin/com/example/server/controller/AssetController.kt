@@ -23,11 +23,10 @@ class AssetController (
     private val assetRepository: AssetRepository
 ){
 
-    @GetMapping
+    @GetMapping("/{yearMonth}")
     fun getTotalAsset(@PathVariable yearMonth: String?): ResponseEntity<Map<String, Any>> {
-        //year_monthがnullの場合今月に置き換え("2025-06")
-        val tempYearMonth = yearMonth ?: LocalDate.now().toString().substring(0,7)
-        val parsedYearMonth = LocalDate.parse("$tempYearMonth-01")
+        val tempYearMonth = yearMonth ?: LocalDate.now().toString()
+        val parsedYearMonth = LocalDate.parse(tempYearMonth)
 
         val totalAmount = asserService.getTotalFromMemory(parsedYearMonth)
         return ResponseEntity.ok(mapOf("totalAmount" to totalAmount))
@@ -39,7 +38,7 @@ class AssetController (
 
     @PostMapping
     fun postAssetRecord(@RequestBody request: AssetRecordRequest) {
-        val parsedYearMonth = LocalDate.parse("${request.yearMonth}-01")
+        val parsedYearMonth = LocalDate.parse(request.yearMonth)
 
         //assetIdからAssetを取得
         val asset = assetRepository.findById(request.assetId).orElseThrow { IllegalArgumentException("Asset is not found") }

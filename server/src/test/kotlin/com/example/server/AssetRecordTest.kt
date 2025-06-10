@@ -101,7 +101,7 @@ class AssetRecordTest  (
         ))
 
         // APIコール
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/2025-06", Map::class.java)
+        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/2025-06-01", Map::class.java)
 
         // 検証
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
