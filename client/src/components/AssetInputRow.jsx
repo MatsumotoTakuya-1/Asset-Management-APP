@@ -14,6 +14,7 @@ const AssetInputRow = ({assetName, value, onChange, totalForMonth, currentTotalF
                 <TableCell>
                     <TextField
                         size="small"
+                        type="number"
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="今月の資産額"

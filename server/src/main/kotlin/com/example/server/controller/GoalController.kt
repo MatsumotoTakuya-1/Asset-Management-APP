@@ -29,6 +29,7 @@ class GoalController(
         val existingGoal = goalRepository.findByUserId(user.id!!)
 
         val goal = if (existingGoal != null) {
+            //すでに同じUserで目標あれば更新
             existingGoal.apply {
                 firstValue = request.firstValue
                 targetAmount = request.targetAmount
@@ -36,6 +37,7 @@ class GoalController(
                 targetRate = request.targetRate
             }
         } else {
+            //新規なら登録
             Goal(
                 user = user,
                 firstValue = request.firstValue,

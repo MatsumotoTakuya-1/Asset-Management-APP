@@ -1,22 +1,21 @@
-import {useEffect, useState} from "react";
+import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
 import {Typography, Box} from "@mui/material";
 import {
-    LineChart,
-    Line,
     XAxis,
     YAxis,
     Tooltip,
     ResponsiveContainer,
-    Legend
+    Legend, Area, AreaChart
 } from "recharts";
 import axios from "axios";
-
-const GoalSimulationChart = () => {
+//forwardRef((props,ref) =>{としないとrefをpropsで受け取れない
+const GoalSimulationChart = forwardRef((props, ref) => {
     const [chartData, setChartData] = useState([]);
-    const [monthlyAmount, setMonthlyAmount] = useState(null);
-    const [targetRate, setTargetRate] = useState(0);
+    const [monthlyAmount, setMonthlyAmount] = useState(null);//積立額
+    const [rate, setRate] = useState(0);
+    const [first, setFirst] = useState(0);
 
-    useEffect(() => {
+    const fetchGoal = () => {
         axios
             .get("/api/goals")
             .then((res) => {
@@ -26,7 +25,8 @@ const GoalSimulationChart = () => {
                 const targetAmount = goal.targetAmount; // 目標資産
                 const targetYear = parseInt(goal.targetYear); // 目標年
                 const targetRate = parseFloat(goal.targetRate); // 年利（例: 0.05）
-                setTargetRate(targetRate)
+                setRate(targetRate)
+                setFirst(firstValue)
 
                 // シミュレーションロジック
                 // 目標額(targetAmount) = 初期資産(firstValue)✖️(1+月利r）^n+毎月積立額P✖️((1+r)^n-1)/r
@@ -64,36 +64,52 @@ const GoalSimulationChart = () => {
             .catch((err) => {
                 console.error("目標取得エラー", err);
             });
+    }
+
+    //refreshで親からfetchGoal呼び出し(chartRef.current.refresh()で呼び出すメソッド定義）
+    useImperativeHandle(ref, () => ({
+        refresh: fetchGoal
+    }));
+
+    useEffect(() => {
+        fetchGoal()
     }, []);
 
     return (
-        <Box sx={{mt: 5}}>
+        <Box sx={{mt: 1}}>
             <Typography variant="h6" gutterBottom>
                 目標達成シミュレーション
             </Typography>
             {monthlyAmount !== null && (
                 <Typography variant="body2" color="text.secondary">
-                    計算年利：{targetRate} %
+                    計算年利：{rate} % , 初期資産：{first}円<br/>
                     毎月必要な積立額：約 {monthlyAmount.toLocaleString()} 円
                 </Typography>
             )}
             <ResponsiveContainer height={300}>
-                <LineChart data={chartData}>
+                <AreaChart data={chartData} margin={{left: 20}}>
                     <XAxis dataKey="month"/>
-                    <YAxis/>
+                    <YAxis domain={[0, "auto"]}
+                           tickFormatter={(val) => {
+                               // if (val >= 1_000_000) return `￥${val / 1_000_000}M`;
+                               if (val >= 1_000_0) return `${val / 1_000_0}万`;
+                               return `${val.toLocaleString()}`;
+                           }
+                           }/>
                     <Tooltip/>
                     <Legend/>
-                    <Line
+                    <Area
                         type="monotone"
                         dataKey="amount"
                         stroke="#8884d8"
-                        dot={false}
+                        fill="#8884d8"
+                        fillOpacity={0.3}
                         name="シミュレーション資産額"
                     />
-                </LineChart>
+                </AreaChart>
             </ResponsiveContainer>
         </Box>
     );
-};
+});
 
 export default GoalSimulationChart;

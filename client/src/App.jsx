@@ -6,8 +6,10 @@ import IncomeExpenseChart from "./components/IncomeExpenseChart.jsx";
 import AssetTrendChart from "./components/AssetTrendChart .jsx";
 import GoalSettingForm from "./components/GoalSettingForm.jsx";
 import GoalSimulationChart from "./components/GoalSimulationChart.jsx";
+import {useRef} from "react";
 
 function App() {
+    const chartRef = useRef();
 
     return (
         <>
@@ -32,11 +34,11 @@ function App() {
 
             <Typography variant={"h5"} fontWeight={"bold"} textAlign={"left"}>Asset Target</Typography>
             <Box display={"flex"} gap={2} mt={1}>
-                <Box flex={1}>
-                    <GoalSettingForm/>
+                <Box flex={2}>
+                    <GoalSettingForm onSaved={() => chartRef.current.refresh()}/>
                 </Box>
-                <Box flex={1}>
-                    <GoalSimulationChart/>
+                <Box flex={8}>
+                    <GoalSimulationChart ref={chartRef}/>
                 </Box>
             </Box>
 

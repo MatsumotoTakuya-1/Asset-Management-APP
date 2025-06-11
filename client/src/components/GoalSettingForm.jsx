@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 
 
-function GoalSettingForm() {
+function GoalSettingForm({onSaved}) {
     const [firstValue, setFirstValue] = useState("");
     const [targetAmount, setTargetAmount] = useState("");
     const [targetYear, setTargetYear] = useState("");
@@ -17,6 +17,11 @@ function GoalSettingForm() {
 
     const processingRegister = async () => {
         try {
+            const year = Number(targetYear);
+            if (isNaN(year) || year < 2025 || year > 2200) {
+                alert("到達年は2025-2200年の範囲で指定してください");
+                return
+            }
             await axios.post("/api/goals", {
                 userId: 1,
                 firstValue,
@@ -25,6 +30,7 @@ function GoalSettingForm() {
                 targetRate,
             });
             alert("登録に成功しました。");
+            onSaved?.();//定義されていれば呼び出し?.
         } catch (err) {
             alert("登録失敗");
             console.error(err);
@@ -42,7 +48,6 @@ function GoalSettingForm() {
             sx={{
                 maxWidth: 300,
                 mx: "auto",
-                mt: 3,
                 p: 4,
             }}
         >
@@ -70,8 +75,12 @@ function GoalSettingForm() {
                     <TextField
                         label="到達年"
                         placeholder="2025"
+                        type="number"
                         value={targetYear}
-                        onChange={(e) => setTargetYear(e.target.value)}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (/^\d{0,4}$/.test(value)) setTargetYear(value)
+                        }}
                         fullWidth
                     />
 
@@ -85,7 +94,9 @@ function GoalSettingForm() {
                     />
                 </Stack>
                 <Box textAlign="right" mt={4}>
-                    <Button type="submit" variant="outlined">
+                    <Button type="submit" variant="outlined"
+                            disabled={!firstValue || !targetAmount || !targetYear || !targetRate}
+                    >
                         Set Target
                     </Button>
                 </Box>
