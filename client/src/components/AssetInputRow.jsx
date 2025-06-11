@@ -3,7 +3,7 @@ import {TableRow, TableCell, TextField, Button} from "@mui/material";
 import {useNavigate} from "react-router";
 
 
-const AssetInputRow = ({assetName, yearMonth, value, onChange, totalForMonth, currentTotalForMonth}) => {
+const AssetInputRow = ({assetName, value, onChange, totalForMonth, currentTotalForMonth}) => {
     const navigate = useNavigate();
 
 
@@ -14,10 +14,9 @@ const AssetInputRow = ({assetName, yearMonth, value, onChange, totalForMonth, cu
                 <TableCell>
                     <TextField
                         size="small"
-                        type="number"
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
-                        placeholder="Amount"
+                        placeholder="今月の資産額"
                     />
                 </TableCell>
                 <TableCell>
@@ -27,7 +26,7 @@ const AssetInputRow = ({assetName, yearMonth, value, onChange, totalForMonth, cu
                 </TableCell>
                 <TableCell>
                     {currentTotalForMonth !== undefined
-                        ? `${((Number(currentTotalForMonth) / Number(totalForMonth)) * 100).toLocaleString()}%`
+                        ? `${(((Number(currentTotalForMonth) - Number(totalForMonth)) / Number(totalForMonth)) * 100).toFixed(1)}%`
                         : "-"}
                 </TableCell>
                 <TableCell>

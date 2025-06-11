@@ -33,10 +33,6 @@ class AssetService(
             .sumOf { it.amount }
     }
 
-    fun save(record: AssetRecord): AssetRecord {
-        return repository.save(record)
-    }
-
     fun getMonthlySummaryByUser(userId: Long): List<MonthlyAssetSummaryResponse> {
         val user =
             userRepository.findById(userId).orElseThrow { IllegalArgumentException("User is not found") }
@@ -47,7 +43,7 @@ class AssetService(
         return assetRecord
             .groupBy {
                 it.yearMonth.toString().substring(0, 7)
-            } // "2025-06-01" → "2025-06". 2025-06: [Transaction(,,), Transaction(..)]
+            } // "2025-06-01" → "2025-06". 2025-06: [AssetRecord(,,), AssetRecord(..)]
             .map { (month, txs) ->
                 val myAsset = txs.sumOf { it.amount.toInt() }
 
@@ -58,5 +54,9 @@ class AssetService(
                 )
             }
             .sortedBy { it.month }
+    }
+
+    fun save(record: AssetRecord): AssetRecord {
+        return repository.save(record)
     }
 }

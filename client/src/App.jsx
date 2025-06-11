@@ -1,6 +1,6 @@
 import './App.css'
 import TotalAssetCard from "./components/TotalAssetCard.jsx";
-import {Divider, Typography} from "@mui/material";
+import {Box, Divider, Typography} from "@mui/material";
 import DashboardActions from "./components/DashboardActions.jsx";
 import IncomeExpenseChart from "./components/IncomeExpenseChart.jsx";
 import AssetTrendChart from "./components/AssetTrendChart .jsx";
@@ -20,8 +20,14 @@ function App() {
             <Divider sx={{my: 3}}/>
 
             <Typography variant={"h5"} fontWeight={"bold"} textAlign={"left"}>Financial Overview</Typography>
-            <IncomeExpenseChart/>
-            <AssetTrendChart/>
+            <Box display={"flex"} gap={2} mt={1}>
+                <Box flex={1}>
+                    <IncomeExpenseChart/>
+                </Box>
+                <Box flex={1}>
+                    <AssetTrendChart/>
+                </Box>
+            </Box>
             <Divider sx={{my: 3}}/>
 
             <Typography variant={"h5"} fontWeight={"bold"} textAlign={"left"}>Asset Target</Typography>

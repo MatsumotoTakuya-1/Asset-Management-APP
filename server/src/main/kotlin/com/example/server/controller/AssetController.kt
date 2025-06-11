@@ -32,8 +32,8 @@ class AssetController(
 ) {
 
     @GetMapping("/{yearMonth}")
-    fun getTotalAsset(@PathVariable yearMonth: String?): ResponseEntity<Map<String, BigDecimal>> {
-        val setYearMonth = yearMonth?.take(7) //2025-06-30 -> 2025-06
+    fun getTotalAsset(@PathVariable yearMonth: String): ResponseEntity<Map<String, BigDecimal>> {
+        val setYearMonth = yearMonth.take(7) //2025-06-30 -> 2025-06
         val parsedYearMonth = LocalDate.parse("$setYearMonth-01")
 
         val totalAmount = asserService.getTotalFromMemory(parsedYearMonth)
@@ -117,6 +117,13 @@ class AssetController(
 
     }
 
+    //    monthly-summary
+    @GetMapping("/monthly-summary")
+    fun getMonthlyAssetSummary(): ResponseEntity<List<MonthlyAssetSummaryResponse>> {
+        val summary = asserService.getMonthlySummaryByUser(1L) //ユーザ固定
+        return ResponseEntity.ok(summary)
+    }
+
     @PostMapping
     fun postAssetRecord(@RequestBody request: AssetRecordRequest) {
         val parsedYearMonth = LocalDate.parse(request.yearMonth)
@@ -135,12 +142,5 @@ class AssetController(
         asserService.save(record)
     }
 
-
-    //    monthly-summary
-    @GetMapping("/monthly-summary")
-    fun getMonthlyAssetSummary(): ResponseEntity<List<MonthlyAssetSummaryResponse>> {
-        val summary = asserService.getMonthlySummaryByUser(1L)
-        return ResponseEntity.ok(summary)
-    }
 
 }

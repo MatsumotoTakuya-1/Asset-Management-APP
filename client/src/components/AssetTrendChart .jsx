@@ -1,6 +1,17 @@
 import {useEffect, useState} from "react";
-import {Typography, Box} from "@mui/material";
-import {BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, LineChart, Line} from "recharts";
+import {Box, Typography} from "@mui/material";
+import {
+    XAxis,
+    YAxis,
+    Tooltip,
+    ResponsiveContainer,
+    Legend,
+    LineChart,
+    Line,
+    AreaChart,
+    CartesianGrid,
+    Area
+} from "recharts";
 import axios from "axios";
 
 const AssetTrendChart = () => {
@@ -11,9 +22,11 @@ const AssetTrendChart = () => {
             .then(res => {
                 const formatted = res.data.map((item) => ({
                     ...item,
-                    month: new Date(item.month + "-01").toLocaleString("default", {month: "short"})
-                }));
+                    month: item.month,
+                    // month: new Date(item.month + "-01").toLocaleString("default", {month: "short"})
+                })).slice(-12);//直近１年だけ表示
                 setData(formatted)
+                // console.log(formatted)
             })
             .catch(err => console.error(err));
     }, []);
@@ -28,20 +41,33 @@ const AssetTrendChart = () => {
     // ]
 
     return (
-        <Box sx={{mt: 5}}>
+        <Box>
+            <Typography variant="h6" fontWeight={"bold"} textAlign={"left"}
+                        color="textSecondary" mb={1}>総資産推移</Typography>
 
             <ResponsiveContainer height={300}>
-                <LineChart data={data}>
+                <AreaChart data={data} margin={{left: 20}}>
+                    <CartesianGrid strokeDasharray="3 3"/>
                     <XAxis dataKey="month"/>
-                    <YAxis/>
+                    <YAxis domain={[0, "auto"]}
+                           tickFormatter={(val) => {
+                               // if (val >= 1_000_000) return `￥${val / 1_000_000}M`;
+                               if (val >= 1_000_0) return `${val / 1_000_0}万`;
+                               return `${val.toLocaleString()}`;
+                           }
+                           }/>
+
                     <Tooltip/>
                     <Legend/>
-                    <Line
+                    <Area
                         type="monotone"
                         dataKey="amount"
-                        dot={false}
+                        stroke="#8884d8"
+                        fill="#8884d8"
+                        fillOpacity={0.3}
+                        name="資産額"
                     />
-                </LineChart>
+                </AreaChart>
             </ResponsiveContainer>
         </Box>
     );

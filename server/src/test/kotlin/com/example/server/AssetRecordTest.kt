@@ -26,25 +26,49 @@ import java.time.LocalDateTime
 class AssetRecordTest(
     @Autowired val restTemplate: TestRestTemplate,
     @LocalServerPort val port: Int,
-    @Autowired val assetRecordRepository: AssetRecordRepository
+    @Autowired val assetRecordRepository: AssetRecordRepository,
+    @Autowired val userRepository: UserRepository,
+    @Autowired val assetRepository: AssetRepository
 ) {
-
-
-    @Autowired
-    private lateinit var response: HttpServletResponse
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
-    @Autowired
-    private lateinit var assetRepository: AssetRepository
+    lateinit var user: User
+    lateinit var asset1: Asset
+    lateinit var asset2: Asset
 
     @BeforeEach
     fun setup() {
-        // 各テストは項目が空の状態で始める。
+        // 初期化
         assetRecordRepository.deleteAll()
-    }
+        assetRepository.deleteAll()
+        userRepository.deleteAll()
 
+        user = userRepository.save(
+            User(
+                name = "User A",
+                email = "a@example.com",
+                salt = "salt1",
+                password = "pass1",
+                createdAt = LocalDateTime.now()
+            )
+        )
+
+        asset1 = assetRepository.save(
+            Asset(
+                user = user,
+                name = "証券口座A",
+                assetType = "stock",
+                createdAt = LocalDateTime.now()
+            )
+        )
+
+        asset2 = assetRepository.save(
+            Asset(
+                user = user,
+                name = "証券口座B",
+                assetType = "cash",
+                createdAt = LocalDateTime.now()
+            )
+        )
+    }
 
     @Test
     fun contextLoads() {
@@ -52,113 +76,61 @@ class AssetRecordTest(
 
     @Test
     fun `指定の年月の総資産額を取得できる`() {
-        // /api/assets/{yearMonth}でその月の総資産を取得
-
-        // Asset を作成して保存（asset_id = 1, 2 の代わり）
-        val asset1 = assetRepository.save(
-            Asset(
-                user = userRepository.save(
-                    User(
-                        name = "User A",
-                        email = "a@example.com",
-                        salt = "salt1",
-                        password = "pass1",
-                        createdAt = LocalDateTime.now()
-                    )
+        assetRecordRepository.saveAll(
+            listOf(
+                AssetRecord(
+                    asset = asset1,
+                    yearMonth = LocalDate.parse("2025-06-01"),
+                    amount = BigDecimal("1000"),
+                    memo = "test",
+                    createdAt = LocalDateTime.now()
                 ),
-                name = "証券口座A",
-                assetType = "stock",
-                createdAt = LocalDateTime.now()
+                AssetRecord(
+                    asset = asset2,
+                    yearMonth = LocalDate.parse("2025-06-01"),
+                    amount = BigDecimal("500"),
+                    memo = "test2",
+                    createdAt = LocalDateTime.now()
+                )
             )
         )
 
-        val asset2 = assetRepository.save(
-            Asset(
-                user = asset1.user, // asset1と同じユーザー
-                name = "証券口座B",
-                assetType = "cash",
-                createdAt = LocalDateTime.now()
-            )
-        )
-        // テストデータ追加
-        assetRecordRepository.save(
-            AssetRecord(
-                asset = asset1,
-                yearMonth = LocalDate.parse("2025-06-01"),
-                amount = BigDecimal("1000"),
-                memo = "test",
-                createdAt = LocalDateTime.now()
-            )
-        )
-        assetRecordRepository.save(
-            AssetRecord(
-                asset = asset2,
-                yearMonth = LocalDate.parse("2025-06-01"),
-                amount = BigDecimal("500"),
-                memo = "test2",
-                createdAt = LocalDateTime.now()
-            )
+        val response = restTemplate.getForEntity(
+            "http://localhost:$port/api/assets/2025-06-01",
+            Map::class.java
         )
 
-        // APIコール
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets/2025-06-01", Map::class.java)
-
-        // 検証
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
         assertThat(response.body?.get("totalAmount").toString(), equalTo("1500.0"))
     }
 
     @Test
     fun `先月の資産名ごとの資産額を取得できる`() {
-        // Asset を作成して保存（asset_id = 1, 2 の代わり）
-        val asset1 = assetRepository.save(
-            Asset(
-                user = userRepository.save(
-                    User(
-                        name = "User A",
-                        email = "a@example.com",
-                        salt = "salt1",
-                        password = "pass1",
-                        createdAt = LocalDateTime.now()
-                    )
+
+        // テストデータ追加
+        assetRecordRepository.saveAll(
+            listOf(
+                AssetRecord(
+                    asset = asset1,
+                    yearMonth = LocalDate.parse("2025-05-01"),
+                    amount = BigDecimal("1000"),
+                    memo = "test",
+                    createdAt = LocalDateTime.now()
                 ),
-                name = "証券口座A",
-                assetType = "stock",
-                createdAt = LocalDateTime.now()
+                AssetRecord(
+                    asset = asset2,
+                    yearMonth = LocalDate.parse("2025-05-01"),
+                    amount = BigDecimal("500"),
+                    memo = "test2",
+                    createdAt = LocalDateTime.now()
+                )
             )
+        )
+        val response = restTemplate.getForEntity(
+            "http://localhost:$port/api/assets/2025-05-09/summary",
+            Map::class.java
         )
 
-        val asset2 = assetRepository.save(
-            Asset(
-                user = asset1.user, // 同じユーザー
-                name = "証券口座B",
-                assetType = "cash",
-                createdAt = LocalDateTime.now()
-            )
-        )
-        // テストデータ追加
-        assetRecordRepository.save(
-            AssetRecord(
-                asset = asset1,
-                yearMonth = LocalDate.parse("2025-05-01"),
-                amount = BigDecimal("1000"),
-                memo = "test",
-                createdAt = LocalDateTime.now()
-            )
-        )
-        assetRecordRepository.save(
-            AssetRecord(
-                asset = asset2,
-                yearMonth = LocalDate.parse("2025-05-01"),
-                amount = BigDecimal("500"),
-                memo = "test2",
-                createdAt = LocalDateTime.now()
-            )
-        )
-        // localhost/api/assets/total に GETリクエストを発行する。
-        val response =
-            restTemplate.getForEntity("http://localhost:$port/api/assets/2025-05-09/summary", Map::class.java)
-        // レスポンスのステータスコードは OK である。
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
 
         val body = response.body as Map<*, *>
@@ -168,23 +140,6 @@ class AssetRecordTest(
 
     @Test
     fun `資産の登録ができる(asset, assetRecord)`() {
-        val asset1 = assetRepository.save(
-            Asset(
-                user = userRepository.save(
-                    User(
-                        name = "User A",
-                        email = "a@example.com",
-                        salt = "salt1",
-                        password = "pass1",
-                        createdAt = LocalDateTime.now()
-                    )
-                ),
-                name = "証券口座A",
-                assetType = "stock",
-                createdAt = LocalDateTime.now()
-            )
-        )
-
         val request = listOf(
             AssetInputRequest(
                 name = "銀行",
@@ -213,6 +168,18 @@ class AssetRecordTest(
         //assertThat(record.asset.name, equalTo("銀行"))
         assertThat(record.amount, equalTo(BigDecimal("1000.00")))
         assertThat(record.memo, equalTo("test"))
+
+
+    }
+
+    @Test
+    fun `monthly summaryAPIが正常に資産推移を返す`() {
+        val response = restTemplate.getForEntity(
+            "http://localhost:$port/api/assets/monthly-summary",
+            List::class.java
+        )
+        assertThat(response.statusCode, equalTo(HttpStatus.OK))
+        assertThat(response.body as List<*>, equalTo(listOf<AssetRecord>()))
 
 
     }

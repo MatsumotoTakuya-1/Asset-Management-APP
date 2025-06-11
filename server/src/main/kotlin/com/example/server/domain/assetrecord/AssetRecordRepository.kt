@@ -10,6 +10,8 @@ import java.time.YearMonth
 
 @Repository
 interface AssetRecordRepository : CrudRepository<AssetRecord, Long> {
+    //findAllByAssetの引数にList<>をそのまま入れれない。多分仕様。List<Asset>に対しIN検索するため
+    // ar.assetがINのassetsのいずれかであるassetRecordを取得
     @Query("SELECT ar FROM AssetRecord  ar WHERE ar.asset IN :assets")
     fun findAllByAsset(@Param("assets") assets: List<Asset>): List<AssetRecord>
 

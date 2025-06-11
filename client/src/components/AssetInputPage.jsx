@@ -36,28 +36,28 @@ const AssetInputPage = () => {
         }));
     };
 
+    const fetchSummary = async () => {
+        try {
+            const date = new Date();
+            const last_month = new Date(date.getFullYear(), date.getMonth() - 1, date.getDate()).toISOString();
+            // console.log(last_month) //2025-05-09T15:00:00.000Z
+            if (!last_month) return;
+            const res = await axios.get(`/api/assets/${last_month}/summary`);
+            // console.log(res.data);
+            setSummary(res.data);
+
+            const current_month = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+            if (!current_month) return;
+            const res2 = await axios.get(`/api/assets/${current_month}/summary`);
+            setCurrentsummary(res2.data);
+
+        } catch (err) {
+            console.error("先月の資産合計取得失敗", err);
+        }
+    };
+
     // 資産の値情報API
     useEffect(() => {
-        const fetchSummary = async () => {
-            try {
-                const date = new Date();
-                const last_month = new Date(date.getFullYear(), date.getMonth() - 1, date.getDate()).toISOString();
-                // console.log(last_month) //2025-05-09T15:00:00.000Z
-                if (!last_month) return;
-                const res = await axios.get(`/api/assets/${last_month}/summary`);
-                // console.log(res.data);
-                setSummary(res.data);
-
-                const current_month = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
-                if (!current_month) return;
-                const res2 = await axios.get(`/api/assets/${current_month}/summary`);
-                setCurrentsummary(res2.data);
-
-            } catch (err) {
-                console.error("先月の資産合計取得失敗", err);
-            }
-        };
-
         fetchSummary();
     }, [yearMonth]);
 
@@ -77,7 +77,12 @@ const AssetInputPage = () => {
             // console.log(payload); //[{name:証券, userId:1, amount:100, memo:"test"},{},]
 
             await axios.post(`/api/assets/${yearMonth}`, payload);
-            alert("Saved successfully");
+            alert("今月の資産保存成功");
+
+            setAmounts("")
+
+            //保存後に再取得
+            fetchSummary();
         } catch (err) {
             console.error("Save failed", err);
         }
