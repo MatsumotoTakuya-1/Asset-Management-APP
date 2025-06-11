@@ -97,9 +97,9 @@ class TransactionController(
         return ResponseEntity.ok(grouped)
     }
 
-    @GetMapping("/monthly-summary")
-    fun getMonthlySummary(): ResponseEntity<List<MonthlySummaryResponse>> {
-        val summary = transactionService.getMonthlySummaryByUser(1L)
+    @GetMapping("/monthly-summary/{userId}")
+    fun getMonthlySummary(@PathVariable userId: Long): ResponseEntity<List<MonthlySummaryResponse>> {
+        val summary = transactionService.getMonthlySummaryByUser(userId)
         return ResponseEntity.ok(summary)
     }
 

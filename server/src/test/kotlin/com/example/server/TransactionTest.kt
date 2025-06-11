@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.UUID
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class TransactionTest(
@@ -36,12 +37,12 @@ class TransactionTest(
     @BeforeEach
     fun setup() {
         transactionRepository.deleteAll()
-        userRepository.deleteAll()
+//        userRepository.deleteAll()
 
         user = userRepository.save(
             User(
                 name = "テストユーザー",
-                email = "a@example.com",
+                email = "test@example.com",
                 salt = "salt",
                 password = "hashed_password",
                 createdAt = LocalDateTime.now()
@@ -222,11 +223,9 @@ class TransactionTest(
 
     @Test
     fun `月ごとの収支サマリーが返る`() {
-        val response = restTemplate.exchange(
-            "http://localhost:$port/api/transactions/monthly-summary",
-            HttpMethod.GET,
-            null,
-            object : ParameterizedTypeReference<List<Map<String, Any>>>() {}
+        val response = restTemplate.getForEntity(
+            "http://localhost:$port/api/transactions/monthly-summary${user.id}",
+            List::class.java
         )
 
         assertThat(response.statusCode, equalTo(HttpStatus.OK))

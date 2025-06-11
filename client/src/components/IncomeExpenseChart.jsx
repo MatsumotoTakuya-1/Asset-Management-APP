@@ -7,7 +7,8 @@ const IncomeExpenseChart = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get("/api/transactions/monthly-summary")
+        const userId = 1
+        axios.get(`/api/transactions/monthly-summary/${userId}`)
             .then(res => {
                 console.log(res.data);
                 const formatted = res.data.map((item) => ({
