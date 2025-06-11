@@ -14,16 +14,13 @@ createRoot(document.getElementById('root')).render(
     <ThemeProvider theme={theme}>
         <CssBaseline/>
         <AppLayout>
-
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<App/>}/>
                     <Route path="/input/transactions/:yearMonth" element={<TransactionInputPage/>}/>
                     <Route path="/input/assets/:yearMonth" element={<AssetInputPage/>}/>
                 </Routes>
-
             </BrowserRouter>
         </AppLayout>
-
     </ThemeProvider>
 )

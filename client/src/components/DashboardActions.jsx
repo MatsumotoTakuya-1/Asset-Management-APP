@@ -12,8 +12,8 @@ const DashboardActions = () => {
                 variant="outlined"
                 onClick={() => navigate(`/input/transactions/${currentMonth}`)}
                 sx={{
-                    fontSize: "0.5rem",
-                    borderRadius: 3,
+                    fontSize: "1rem",
+                    borderRadius: 5,
                     textTransform: "none",
                     boxShadow: 3,
                     color: 'black',
@@ -30,8 +30,8 @@ const DashboardActions = () => {
                 variant="outlined"
                 onClick={() => navigate(`/input/assets/${currentMonth}`)}
                 sx={{
-                    fontSize: "0.5rem",
-                    borderRadius: 3,
+                    fontSize: "1rem",
+                    borderRadius: 5,
                     textTransform: "none",
                     boxShadow: 3,
                     color: 'black',

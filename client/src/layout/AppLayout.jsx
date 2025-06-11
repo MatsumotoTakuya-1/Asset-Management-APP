@@ -1,5 +1,5 @@
 // src/layout/AppLayout.tsx
-import {AppBar, Box, Container, Toolbar, Typography, Avatar, Button} from "@mui/material";
+import {AppBar, Box, Container, Toolbar, Avatar, Button} from "@mui/material";
 
 const AppLayout = ({children}) => {
     return (

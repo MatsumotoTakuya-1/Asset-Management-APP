@@ -1,10 +1,10 @@
 package com.example.server
 
 import com.example.server.domain.asset.Asset
+import com.example.server.domain.asset.AssetInputRequest
 import com.example.server.domain.asset.AssetRepository
 import com.example.server.domain.assetrecord.AssetRecord
 import com.example.server.domain.assetrecord.AssetRecordRepository
-import com.example.server.domain.assetrecord.AssetRecordRequest
 import com.example.server.domain.user.User
 import com.example.server.domain.user.UserRepository
 import org.hamcrest.MatcherAssert.assertThat
@@ -46,16 +46,9 @@ class AssetRecordTest(
     }
 
     @Test
-    fun `GETリクエストはOKステータスを返す`() {
-        // localhost/api/assets/total に GETリクエストを発行する。
-        val response = restTemplate.getForEntity("http://localhost:$port/api/assets", String::class.java)
-        // レスポンスのステータスコードは OK である。
-        assertThat(response.statusCode, equalTo(HttpStatus.OK))
-    }
+    fun `指定の年月の総資産額を取得できる`() {
+        // /api/assets/{yearMonth}でその月の総資産を取得
 
-
-    @Test
-    fun `特定の年月の総資産額を取得できる`() {
         // Asset を作成して保存（asset_id = 1, 2 の代わり）
         val asset1 = assetRepository.save(
             Asset(
@@ -76,7 +69,7 @@ class AssetRecordTest(
 
         val asset2 = assetRepository.save(
             Asset(
-                user = asset1.user, // 同じユーザーにしてもOK
+                user = asset1.user, // asset1と同じユーザー
                 name = "証券口座B",
                 assetType = "cash",
                 createdAt = LocalDateTime.now()
@@ -111,7 +104,7 @@ class AssetRecordTest(
     }
 
     @Test
-    fun `はOKステータスを返す`() {
+    fun `先月の資産名ごとの資産額を取得できる`() {
         // Asset を作成して保存（asset_id = 1, 2 の代わり）
         val asset1 = assetRepository.save(
             Asset(
@@ -132,7 +125,7 @@ class AssetRecordTest(
 
         val asset2 = assetRepository.save(
             Asset(
-                user = asset1.user, // 同じユーザーにしてもOK
+                user = asset1.user, // 同じユーザー
                 name = "証券口座B",
                 assetType = "cash",
                 createdAt = LocalDateTime.now()
@@ -162,6 +155,43 @@ class AssetRecordTest(
             restTemplate.getForEntity("http://localhost:$port/api/assets/2025-05-09/summary", String::class.java)
         // レスポンスのステータスコードは OK である。
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
+    }
+
+    @Test
+    fun `資産の登録ができる(asset, assetRecord)`() {
+        val asset1 = assetRepository.save(
+            Asset(
+                user = userRepository.save(
+                    User(
+                        name = "User A",
+                        email = "a@example.com",
+                        salt = "salt1",
+                        password = "pass1",
+                        createdAt = LocalDateTime.now()
+                    )
+                ),
+                name = "証券口座A",
+                assetType = "stock",
+                createdAt = LocalDateTime.now()
+            )
+        )
+
+        val request = listOf(
+            AssetInputRequest(
+                name = "銀行",
+                userId = 1L,
+                amount = BigDecimal("1000"),
+                memo = "test",
+                yearMonth = "2025"
+        )
+
+        val response = restTemplate.postForEntity(
+            "http://localhost:$port/api/assets/2025-06-01",
+    payload,
+    String::class.java
+    )
+
+
     }
 
 }

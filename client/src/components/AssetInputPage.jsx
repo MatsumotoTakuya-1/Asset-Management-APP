@@ -24,7 +24,7 @@ const assetCategories = ["銀行", "証券", "仮想通貨", "不動産", "そ�
 const AssetInputPage = () => {
     const {yearMonth} = useParams();
     const [amounts, setAmounts] = useState({});
-    const [summary, setSummary] = useState({});
+    const [summary, setSummary] = useState({});// 先月の資産額
 
 
     // 金額入力の変更を処理
@@ -35,7 +35,7 @@ const AssetInputPage = () => {
         }));
     };
 
-    // 先月API呼び出し
+    // 先月の資産の値情報API
     useEffect(() => {
         const fetchSummary = async () => {
             try {
@@ -44,7 +44,7 @@ const AssetInputPage = () => {
                 // console.log(last_month) //2025-05-09T15:00:00.000Z
                 if (!last_month) return;
                 const res = await axios.get(`/api/assets/${last_month}/summary`);
-                console.log(res.data);
+                // console.log(res.data);
                 setSummary(res.data);
             } catch (err) {
                 console.error("先月の資産合計取得失敗", err);
@@ -78,7 +78,7 @@ const AssetInputPage = () => {
 
     return (
         <Box>
-            <Typography variant="h5" textAlign={"left"} gutterBottom>
+            <Typography variant="h5" fontWeight={"bold"} textAlign={"left"} gutterBottom>
                 資産 - {yearMonth}
             </Typography>
 
@@ -87,9 +87,9 @@ const AssetInputPage = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>名前</TableCell>
-                            <TableCell>現在値</TableCell>
-                            <TableCell>先月の値</TableCell>
+                            <TableCell>資産名</TableCell>
+                            <TableCell>現在の資産額</TableCell>
+                            <TableCell>先月の資産額</TableCell>
                             <TableCell>History</TableCell>
                         </TableRow>
                     </TableHead>
@@ -109,9 +109,9 @@ const AssetInputPage = () => {
             </TableContainer>
 
             <Box textAlign="right">
-                <><Button variant="contained" color="primary" onClick={handleSubmit}>
+                <Button variant="outlined" color="primary" onClick={handleSubmit}>
                     Save
-                </Button></>
+                </Button>
             </Box>
         </Box>
     );

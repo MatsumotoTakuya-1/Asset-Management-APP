@@ -7,18 +7,18 @@ function TotalAssetCard() {
     const [loading, setLoading] = useState(true);
     const [total, setTotal] = useState(0);
 
-    useEffect(() =>{
+    useEffect(() => {
         const fetchTotal = async () => {
-            try{
+            try {
                 const yearMonth = new Date().toISOString()
                 console.log(yearMonth)
-                const res = await  axios.get(`api/assets/${yearMonth}`,)
+                const res = await axios.get(`api/assets/${yearMonth}`,)
                 // console.log(res.data)
                 setTotal(res.data.totalAmount)
 
-            }catch (err){
-                console.error("総資産の取得に失敗しました。",err);
-            }finally {
+            } catch (err) {
+                console.error("総資産の取得に失敗しました。", err);
+            } finally {
                 setLoading(false);
             }
         }
@@ -28,13 +28,13 @@ function TotalAssetCard() {
 
     return (
         <Card>
-            <CardContent >
+            <CardContent>
                 <Typography textAlign={"left"}>総資産額</Typography>
                 {loading ? (
-                    <CircularProgress />
+                    <CircularProgress/>
                 ) : (
-                    <Typography variant="body2" color="textSecondary" textAlign={"left"}  >
-                      ￥{total?.toLocaleString() ?? 0}
+                    <Typography variant="h5" color="textSecondary" textAlign={"left"} fontWeight={"bold"}>
+                        ￥{total?.toLocaleString() ?? 0}
                     </Typography>
                 )}
             </CardContent>

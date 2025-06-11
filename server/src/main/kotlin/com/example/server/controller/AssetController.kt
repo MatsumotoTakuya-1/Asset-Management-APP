@@ -32,17 +32,39 @@ class AssetController(
 ) {
 
     @GetMapping("/{yearMonth}")
-    fun getTotalAsset(@PathVariable yearMonth: String?): ResponseEntity<Map<String, Any>> {
+    fun getTotalAsset(@PathVariable yearMonth: String?): ResponseEntity<Map<String, BigDecimal>> {
         val setYearMonth = yearMonth?.take(7) //2025-06-30 -> 2025-06
         val parsedYearMonth = LocalDate.parse("$setYearMonth-01")
 
         val totalAmount = asserService.getTotalFromMemory(parsedYearMonth)
-        return ResponseEntity.ok(mapOf("totalAmount" to totalAmount))
+        return ResponseEntity.ok(mapOf("totalAmount" to totalAmount))//{totalAmount:指定付きの総資産}
     }
-//    fun getAssetRecord():List<AssetRecord> {
-//        val asset = repository.findAll()
-//        return asset.toList();
-//    }
+
+    //  先月の合計取得（カテゴリ別）
+    @GetMapping("/{yearMonth}/summary")
+    fun getLastMonthlySummary(
+        @PathVariable yearMonth: String,
+    ): ResponseEntity<Map<String, BigDecimal>> {
+        // 日付をLocalDate型にする処理
+        val setYearMonth = yearMonth.take(7)
+        val parsedYearMonth = LocalDate.parse("$setYearMonth-01")
+//        println(parsedYearMonth)
+
+        //ユーザーが登録したasset情報取ってくる（複数なのでList<Asset>)
+        val assets = assetRepository.findAllByUserId(1L)//ユーザid１固定
+        println(assets)
+        //上記のasset のassetIdを元にassetRecord取ってくる
+        val assetRecord = asserService.getFromMemory(assets, parsedYearMonth)
+
+        println(assetRecord)
+        val grouped = assetRecord.groupBy { it.asset.name }
+            .mapValues { entry -> //List<AssetRecord>を各要素で処理
+                // fold(初期値、処理（今回は合計）同じassetIDで同じ年月の場合、更新処理するので実際は合計しなくてもOK
+                entry.value.fold(BigDecimal.ZERO) { acc, t -> acc + t.amount }
+            }
+
+        return ResponseEntity.ok(grouped)//{銀行:2020,仮想通貨:100,...}
+    }
 
     @PostMapping
     fun postAssetRecord(@RequestBody request: AssetRecordRequest) {
@@ -62,27 +84,6 @@ class AssetController(
         asserService.save(record)
     }
 
-    //  先月の合計取得（カテゴリ別）
-    @GetMapping("/{yearMonth}/summary")
-    fun getLastMonthlySummary(
-        @PathVariable yearMonth: String,
-    ): ResponseEntity<Map<String, BigDecimal>> {
-        val setYearMonth = yearMonth.take(7)
-        val parsedYearMonth = LocalDate.parse("$setYearMonth-01")
-        println(parsedYearMonth)
-
-        val asset = assetRepository.findAllByUserId(1L)
-        println(asset)
-        val asset_record = asserService.getFromMemory(asset, parsedYearMonth)
-
-        println(asset_record)
-        val grouped = asset_record.groupBy { it.asset.name }
-            .mapValues { entry ->
-                entry.value.fold(BigDecimal.ZERO) { acc, t -> acc + t.amount }
-            }
-
-        return ResponseEntity.ok(grouped)
-    }
 
     @PostMapping("/{yearMonth}")
     fun saveAsset(
