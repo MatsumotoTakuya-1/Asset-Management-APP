@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface AssetRecordRepository : CrudRepository<AssetRecord, Long> {
-    @Query("SELECT ar FROM AssetRecord  ar WHERE ar.asset IN : assets")
+    @Query("SELECT ar FROM AssetRecord  ar WHERE ar.asset IN :assets")
     fun findAllByAsset(@Param("assets") assets: List<Asset>): List<AssetRecord>
 }
 

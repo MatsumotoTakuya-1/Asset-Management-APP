@@ -4,6 +4,7 @@ import {Container, CssBaseline, Divider, ThemeProvider, Typography} from "@mui/m
 import DashboardActions from "./components/DashboardActions.jsx";
 import IncomeExpenseChart from "./components/IncomeExpenseChart.jsx";
 import AssetTrendChart from "./components/AssetTrendChart .jsx";
+import GoalSettingForm from "./components/GoalSettingForm.jsx";
 
 function App() {
 
@@ -21,6 +22,9 @@ function App() {
             <IncomeExpenseChart/>
             <AssetTrendChart/>
             <Divider sx={{my: 3}}/>
+
+            <Typography variant={"h5"} textAlign={"left"}>Asset Target</Typography>
+            <GoalSettingForm/>
 
 
         </>
