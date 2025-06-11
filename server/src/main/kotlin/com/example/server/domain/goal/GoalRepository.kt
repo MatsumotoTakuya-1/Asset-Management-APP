@@ -4,4 +4,6 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface GoalRepository : CrudRepository<Goal, Long>
+interface GoalRepository : CrudRepository<Goal, Long> {
+    fun findByUserId(userId: Long): Goal?
+}
