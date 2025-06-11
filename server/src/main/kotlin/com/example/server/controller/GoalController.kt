@@ -3,6 +3,7 @@ package com.example.server.controller
 import com.example.server.domain.goal.Goal
 import com.example.server.domain.goal.GoalRepository
 import com.example.server.domain.goal.GoalRequest
+import com.example.server.domain.goal.GoalResponse
 import com.example.server.domain.user.User
 import com.example.server.domain.user.UserRepository
 import org.springframework.http.HttpStatus
@@ -48,8 +49,15 @@ class GoalController(
     }
 
     @GetMapping
-    fun getGoal() {
+    fun getGoal(): ResponseEntity<GoalResponse> {
         val myGoal = goalRepository.findByUserId(1L)
-        return ResponseEntity.ok(myGoal!!)
+
+        val res = GoalResponse(
+            firstValue = myGoal!!.firstValue,
+            targetAmount = myGoal.targetAmount,
+            targetRate = myGoal.targetRate,
+            targetYear = myGoal.targetYear
+        )
+        return ResponseEntity.ok(res)
     }
 }

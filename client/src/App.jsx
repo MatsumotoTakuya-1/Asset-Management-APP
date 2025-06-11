@@ -5,6 +5,7 @@ import DashboardActions from "./components/DashboardActions.jsx";
 import IncomeExpenseChart from "./components/IncomeExpenseChart.jsx";
 import AssetTrendChart from "./components/AssetTrendChart .jsx";
 import GoalSettingForm from "./components/GoalSettingForm.jsx";
+import GoalSimulationChart from "./components/GoalSimulationChart.jsx";
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
 
             <Typography variant={"h5"} textAlign={"left"}>Asset Target</Typography>
             <GoalSettingForm/>
+            <GoalSimulationChart/>
 
 
         </>
