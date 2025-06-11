@@ -111,14 +111,26 @@ class AssetController(
                 )
             }
 
-            val record = AssetRecord(
-                asset = asset,
-                yearMonth = parsedYearMonth,
-                amount = assetInput.amount,
-                memo = assetInput.memo ?: "",
-                createdAt = LocalDateTime.now(),
-            )
-            assetRecordRepository.save(record)
+            val existingRecord = assetRecordRepository.findByAssetAndYearMonth(asset, parsedYearMonth)
+
+            if (existingRecord != null) {
+                //上書き保存
+                existingRecord.amount = assetInput.amount
+                existingRecord.memo = assetInput.memo
+                assetRecordRepository.save(existingRecord)
+            } else {
+                //新規作成
+                val record = AssetRecord(
+                    asset = asset,
+                    yearMonth = parsedYearMonth,
+                    amount = assetInput.amount,
+                    memo = assetInput.memo ?: "",
+                    createdAt = LocalDateTime.now(),
+                )
+                assetRecordRepository.save(record)
+            }
+
+
         }
         return ResponseEntity.ok("保存完了")
 

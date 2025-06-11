@@ -4,6 +4,7 @@ import com.example.server.domain.user.User
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
+import java.time.YearMonth
 
 @Repository
 interface AssetRepository : CrudRepository<Asset, Long> {

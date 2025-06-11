@@ -29,6 +29,12 @@ class DataInitializer {
         transactionRepo: TransactionRepository
     ) = CommandLineRunner {
 
+        // すでに初期データがある場合はスキップ
+        val existing = userRepo.findByEmail("test@example.com")
+        if (existing != null) {
+            println("🟡 初期データはすでに存在しています。スキップします。")
+            return@CommandLineRunner
+        }
         // ユーザーを作成 or 取得
         val user = userRepo.findByEmail("test@example.com") ?: userRepo.save(
             User(

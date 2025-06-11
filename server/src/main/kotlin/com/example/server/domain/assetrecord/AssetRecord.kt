@@ -21,15 +21,15 @@ data class AssetRecord(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY,  optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "asset_id", nullable = false)
     var asset: Asset,//実際はAssetエンティティを格納。　asset_record.asset.id
     @Column(name = "year_month", nullable = false)
     var yearMonth: LocalDate,
     @Column(nullable = false)
-    val amount: BigDecimal,
+    var amount: BigDecimal,
 
-    val memo: String? = null,
+    var memo: String? = null,
 
     @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null

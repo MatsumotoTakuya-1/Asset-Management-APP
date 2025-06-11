@@ -186,16 +186,16 @@ class AssetRecordTest(
                 userId = 1L,
                 amount = BigDecimal("1000"),
                 memo = "test",
+            )
         )
 
         val response = restTemplate.postForEntity(
             "http://localhost:$port/api/assets/2025-06-01",
-             request,
+            request,
             String::class.java
         )
 
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
-
 
 
     }
