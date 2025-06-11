@@ -22,6 +22,7 @@ data class AssetRecord(
     var id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "asset_id", nullable = false)
     var asset: Asset,//実際はAssetエンティティを格納。　asset_record.asset.id
     @Column(name = "year_month", nullable = false)

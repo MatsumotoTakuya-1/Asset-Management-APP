@@ -8,6 +8,7 @@ import com.example.server.domain.assetrecord.AssetRecordRepository
 import com.example.server.domain.user.User
 import com.example.server.domain.user.UserRepository
 import jakarta.servlet.http.HttpServletResponse
+import jakarta.transaction.Transactional
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
@@ -156,9 +157,13 @@ class AssetRecordTest(
         )
         // localhost/api/assets/total に GETリクエストを発行する。
         val response =
-            restTemplate.getForEntity("http://localhost:$port/api/assets/2025-05-09/summary", String::class.java)
+            restTemplate.getForEntity("http://localhost:$port/api/assets/2025-05-09/summary", Map::class.java)
         // レスポンスのステータスコードは OK である。
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
+
+        val body = response.body as Map<*, *>
+        assertThat(body["証券口座A"], equalTo(1000.0))
+        assertThat(body["証券口座B"], equalTo(500.0))
     }
 
     @Test
@@ -195,7 +200,19 @@ class AssetRecordTest(
             String::class.java
         )
 
+        // ステータスコード確認
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
+
+        // 登録結果の確認
+        val savedRecords = assetRecordRepository.findAll()
+        //kotlinならcount()の方がいい？toList()すればsizeも使える
+        assertThat(savedRecords.count(), equalTo(1))
+
+        val record = savedRecords.first()
+        //うまく通らない。assetをFetchType.LAZY→EAGERにして即時読み込みにすれば通る
+        //assertThat(record.asset.name, equalTo("銀行"))
+        assertThat(record.amount, equalTo(BigDecimal("1000.00")))
+        assertThat(record.memo, equalTo("test"))
 
 
     }

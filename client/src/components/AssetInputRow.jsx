@@ -3,8 +3,10 @@ import {TableRow, TableCell, TextField, Button} from "@mui/material";
 import {useNavigate} from "react-router";
 
 
-const AssetInputRow = ({assetName, yearMonth, value, onChange, totalForMonth}) => {
+const AssetInputRow = ({assetName, yearMonth, value, onChange, totalForMonth, currentTotalForMonth}) => {
     const navigate = useNavigate();
+
+
     return (
         <>
             <TableRow>
@@ -21,6 +23,11 @@ const AssetInputRow = ({assetName, yearMonth, value, onChange, totalForMonth}) =
                 <TableCell>
                     {totalForMonth !== undefined
                         ? `￥${Number(totalForMonth).toLocaleString()}`
+                        : "-"}
+                </TableCell>
+                <TableCell>
+                    {currentTotalForMonth !== undefined
+                        ? `${((Number(currentTotalForMonth) / Number(totalForMonth)) * 100).toLocaleString()}%`
                         : "-"}
                 </TableCell>
                 <TableCell>

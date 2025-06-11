@@ -25,6 +25,7 @@ const AssetInputPage = () => {
     const {yearMonth} = useParams();
     const [amounts, setAmounts] = useState({});
     const [summary, setSummary] = useState({});// 先月の資産額
+    const [currentSummary, setCurrentsummary] = useState({});// 今月の資産額
 
 
     // 金額入力の変更を処理
@@ -35,7 +36,7 @@ const AssetInputPage = () => {
         }));
     };
 
-    // 先月の資産の値情報API
+    // 資産の値情報API
     useEffect(() => {
         const fetchSummary = async () => {
             try {
@@ -46,6 +47,12 @@ const AssetInputPage = () => {
                 const res = await axios.get(`/api/assets/${last_month}/summary`);
                 // console.log(res.data);
                 setSummary(res.data);
+
+                const current_month = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+                if (!current_month) return;
+                const res2 = await axios.get(`/api/assets/${current_month}/summary`);
+                setCurrentsummary(res2.data);
+
             } catch (err) {
                 console.error("先月の資産合計取得失敗", err);
             }
@@ -67,7 +74,7 @@ const AssetInputPage = () => {
                     // yearMonth: yearMonth,
                     memo: "下記はあとで実装",
                 }));
-            console.log(payload);
+            // console.log(payload); //[{name:証券, userId:1, amount:100, memo:"test"},{},]
 
             await axios.post(`/api/assets/${yearMonth}`, payload);
             alert("Saved successfully");
@@ -90,6 +97,7 @@ const AssetInputPage = () => {
                             <TableCell>資産名</TableCell>
                             <TableCell>現在の資産額</TableCell>
                             <TableCell>先月の資産額</TableCell>
+                            <TableCell>先月からの変化率</TableCell>
                             <TableCell>History</TableCell>
                         </TableRow>
                     </TableHead>
@@ -101,7 +109,9 @@ const AssetInputPage = () => {
                                 yearMonth={yearMonth}
                                 value={amounts[asset] || ""}
                                 onChange={(val) => handleAmountChange(asset, val)}
-                                totalForMonth={summary[asset] || 0}
+                                totalForMonth={summary[asset] || "-"}
+                                currentTotalForMonth={currentSummary[asset] || 0}
+
                             />
                         ))}
                     </TableBody>

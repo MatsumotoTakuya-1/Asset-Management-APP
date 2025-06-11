@@ -66,25 +66,6 @@ class AssetController(
         return ResponseEntity.ok(grouped)//{銀行:2020,仮想通貨:100,...}
     }
 
-    @PostMapping
-    fun postAssetRecord(@RequestBody request: AssetRecordRequest) {
-        val parsedYearMonth = LocalDate.parse(request.yearMonth)
-
-        //assetIdからAssetを取得
-        val asset =
-            assetRepository.findById(request.assetId).orElseThrow { IllegalArgumentException("Asset is not found") }
-
-        val record = AssetRecord(
-            asset = asset,
-            yearMonth = parsedYearMonth,
-            amount = request.amount,
-            memo = request.memo,
-            createdAt = LocalDateTime.now(),
-        )
-        asserService.save(record)
-    }
-
-
     @PostMapping("/{yearMonth}")
     fun saveAsset(
         @PathVariable yearMonth: String,
@@ -135,6 +116,25 @@ class AssetController(
         return ResponseEntity.ok("保存完了")
 
     }
+
+    @PostMapping
+    fun postAssetRecord(@RequestBody request: AssetRecordRequest) {
+        val parsedYearMonth = LocalDate.parse(request.yearMonth)
+
+        //assetIdからAssetを取得
+        val asset =
+            assetRepository.findById(request.assetId).orElseThrow { IllegalArgumentException("Asset is not found") }
+
+        val record = AssetRecord(
+            asset = asset,
+            yearMonth = parsedYearMonth,
+            amount = request.amount,
+            memo = request.memo,
+            createdAt = LocalDateTime.now(),
+        )
+        asserService.save(record)
+    }
+
 
     //    monthly-summary
     @GetMapping("/monthly-summary")
