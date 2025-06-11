@@ -223,9 +223,11 @@ class TransactionTest(
 
     @Test
     fun `月ごとの収支サマリーが返る`() {
-        val response = restTemplate.getForEntity(
-            "http://localhost:$port/api/transactions/monthly-summary${user.id}",
-            List::class.java
+        val response = restTemplate.exchange(
+            "http://localhost:$port/api/transactions/monthly-summary/${user.id}",
+            HttpMethod.GET,
+            null,
+            object : ParameterizedTypeReference<List<Map<String, Any>>>() {}
         )
 
         assertThat(response.statusCode, equalTo(HttpStatus.OK))

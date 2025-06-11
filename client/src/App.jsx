@@ -31,8 +31,14 @@ function App() {
             <Divider sx={{my: 3}}/>
 
             <Typography variant={"h5"} fontWeight={"bold"} textAlign={"left"}>Asset Target</Typography>
-            <GoalSettingForm/>
-            <GoalSimulationChart/>
+            <Box display={"flex"} gap={2} mt={1}>
+                <Box flex={1}>
+                    <GoalSettingForm/>
+                </Box>
+                <Box flex={1}>
+                    <GoalSimulationChart/>
+                </Box>
+            </Box>
 
 
         </>

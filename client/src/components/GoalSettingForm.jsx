@@ -1,6 +1,5 @@
 import {useState} from "react";
 import axios from "axios";
-
 import {
     Box,
     Button,
@@ -8,11 +7,12 @@ import {
     TextField,
 } from "@mui/material";
 
+
 function GoalSettingForm() {
-    const [firstValue, setFirstValue] = useState(0);
-    const [targetAmount, setTargetAmount] = useState(0);
+    const [firstValue, setFirstValue] = useState("");
+    const [targetAmount, setTargetAmount] = useState("");
     const [targetYear, setTargetYear] = useState("");
-    const [targetRate, setTargetRate] = useState(0);
+    const [targetRate, setTargetRate] = useState("");
 
 
     const processingRegister = async () => {
@@ -25,8 +25,6 @@ function GoalSettingForm() {
                 targetRate,
             });
             alert("登録に成功しました。");
-
-
         } catch (err) {
             alert("登録失敗");
             console.error(err);
@@ -41,47 +39,54 @@ function GoalSettingForm() {
                 e.preventDefault();
                 processingRegister();
             }}
+            sx={{
+                maxWidth: 300,
+                mx: "auto",
+                mt: 3,
+                p: 4,
+            }}
         >
 
             <Stack spacing={3}>
-                <TextField
-                    label="first value"
-                    placeholder="￥100"
-                    value={firstValue}
-                    onChange={(e) => setFirstValue(e.target.value)}
-                    fullWidth
-                    sx={{color: "text.secondary"}}
-                ></TextField>
+                <Stack spacing={3}>
+                    <TextField
+                        label="目標額"
+                        placeholder="100000000"
+                        type="number"
+                        value={targetAmount}
+                        onChange={(e) => setTargetAmount(e.target.value)}
+                        fullWidth
+                    />
 
-                <TextField
-                    label="Target Amount"
-                    placeholder="￥100000000"
-                    value={targetAmount}
-                    onChange={(e) => setTargetAmount(e.target.value)}
-                    fullWidth
-                    sx={{color: "text.secondary"}}
-                ></TextField>
+                    <TextField
+                        label="初期費用"
+                        placeholder="100000"
+                        type="number"
+                        value={firstValue}
+                        onChange={(e) => setFirstValue(e.target.value)}
+                        fullWidth
+                    />
 
-                <TextField
-                    label="Target Year"
-                    placeholder="2025"
-                    value={targetYear}
-                    onChange={(e) => setTargetYear(e.target.value)}
-                    fullWidth
-                    sx={{color: "text.secondary"}}
-                ></TextField>
+                    <TextField
+                        label="到達年"
+                        placeholder="2025"
+                        value={targetYear}
+                        onChange={(e) => setTargetYear(e.target.value)}
+                        fullWidth
+                    />
 
-                <TextField
-                    label="Annual Rate"
-                    placeholder="5%"
-                    value={targetRate}
-                    onChange={(e) => setTargetRate(e.target.value)}
-                    fullWidth
-                    sx={{color: "text.secondary"}}
-                ></TextField>
-                <Box mt={8}>
-                    <Button type="submit" fullWidth>
-                        SetTarget
+                    <TextField
+                        label="想定年利 (%)"
+                        placeholder="5%"
+                        type="number"
+                        value={targetRate}
+                        onChange={(e) => setTargetRate(e.target.value)}
+                        fullWidth
+                    />
+                </Stack>
+                <Box textAlign="right" mt={4}>
+                    <Button type="submit" variant="outlined">
+                        Set Target
                     </Button>
                 </Box>
             </Stack>
