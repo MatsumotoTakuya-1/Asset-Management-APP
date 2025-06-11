@@ -24,38 +24,112 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class TransactionTest  (
+class TransactionTest(
     @Autowired val restTemplate: TestRestTemplate,
     @LocalServerPort val port: Int,
     @Autowired val transactionRepository: TransactionRepository,
-){
+    @Autowired val userRepository: UserRepository,
+) {
 
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var user: User
 
     @BeforeEach
     fun setup() {
-        // 各テストは項目が空の状態で始める。
         transactionRepository.deleteAll()
-    }
+        userRepository.deleteAll()
 
+        user = userRepository.save(
+            User(
+                name = "テストユーザー",
+                email = "a@example.com",
+                salt = "salt",
+                password = "hashed_password",
+                createdAt = LocalDateTime.now()
+            )
+        )
+        // データ登録
+        transactionRepository.saveAll(
+            listOf(
+                Transaction(
+                    user = user,
+                    yearMonth = LocalDate.parse("2025-06-01"),
+                    category = "給与",
+                    type = "income",
+                    isFixed = true,
+                    amount = BigDecimal("250000"),
+                    memo = "給料",
+                    createdAt = LocalDateTime.now()
+                ),
+                Transaction(
+                    user = user,
+                    yearMonth = LocalDate.parse("2025-06-01"),
+                    category = "副業",
+                    type = "income",
+                    isFixed = false,
+                    amount = BigDecimal("50000"),
+                    memo = "副業収入",
+                    createdAt = LocalDateTime.now()
+                ),
+                Transaction(
+                    user = user,
+                    yearMonth = LocalDate.parse("2025-06-01"),
+                    category = "家賃",
+                    type = "expense",
+                    isFixed = true,
+                    amount = BigDecimal("70000"),
+                    memo = "固定費",
+                    createdAt = LocalDateTime.now()
+                ),
+                Transaction(
+                    user = user,
+                    yearMonth = LocalDate.parse("2025-04-01"),
+                    category = "給料",
+                    type = "income",
+                    isFixed = true,
+                    amount = BigDecimal("300000"),
+                    memo = "4月給料",
+                    createdAt = LocalDateTime.now()
+                ),
+                Transaction(
+                    user = user,
+                    yearMonth = LocalDate.parse("2025-04-01"),
+                    category = "家賃",
+                    type = "expense",
+                    isFixed = true,
+                    amount = BigDecimal("70000"),
+                    memo = "4月家賃",
+                    createdAt = LocalDateTime.now()
+                ),
+                Transaction(
+                    user = user,
+                    yearMonth = LocalDate.parse("2025-05-01"),
+                    category = "副業",
+                    type = "income",
+                    isFixed = false,
+                    amount = BigDecimal("50000"),
+                    memo = "副収入",
+                    createdAt = LocalDateTime.now()
+                ),
+                Transaction(
+                    user = user,
+                    yearMonth = LocalDate.parse("2025-05-01"),
+                    category = "食費",
+                    type = "expense",
+                    isFixed = false,
+                    amount = BigDecimal("15000"),
+                    memo = "外食など",
+                    createdAt = LocalDateTime.now()
+                )
+            )
+        )
+    }
 
     @Test
     fun contextLoads() {
     }
-    @Test
-    fun `POSTで複数トランザクションが保存される`(){
-        val user = userRepository.save(
-            User(
-                name = "テストマン",
-                email = "a@example.com",
-                salt = "salt1",
-                password = "pass1",
-                createdAt = LocalDateTime.now()
-            )
-        )
 
+    @Test
+    fun `POSTで複数トランザクションが保存される`() {
         val payload = listOf(
             mapOf(
                 "userId" to user.id,
@@ -85,21 +159,11 @@ class TransactionTest  (
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
 
         val saved = transactionRepository.findByYearMonth(LocalDate.parse("2025-06-01"))
-        assertThat(saved.size, equalTo(2))
+        assertThat(saved.size, equalTo(5))
     }
 
     @Test
-    fun `POSTした情報がtransactionエンティティに入っているか`() {
-        val user = userRepository.save(
-                    User(
-                        name = "User A",
-                        email = "a@example.com",
-                        salt = "salt1",
-                        password = "pass1",
-                        createdAt = LocalDateTime.now()
-                    )
-                )
-
+    fun `GETでtransactionエンティティから情報取得`() {
         // テストデータ追加
         transactionRepository.save(
             Transaction(
@@ -107,16 +171,12 @@ class TransactionTest  (
                 yearMonth = LocalDate.parse("2025-06-01"),
                 category = "給料",
                 type = "income",
-                isFixed =  true,
+                isFixed = true,
                 amount = BigDecimal("1000"),
                 memo = "test",
                 createdAt = LocalDateTime.now()
             )
         )
-
-
-        // APIコール
-//        val response = restTemplate.getForEntity(/* url = */ "http://localhost:$port/api/transaction/2025-06-01", /* responseType = */ List::class.java)
 
         val response = restTemplate.exchange(
             "http://localhost:$port/api/transactions/2025-06-01",
@@ -125,13 +185,60 @@ class TransactionTest  (
             object : ParameterizedTypeReference<List<TransactionResponse>>() {}
         )
 
-//        println(response.body?.get(0)?.amount)
         // 検証
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
-        assertThat(response.body?.get(0)?.amount, equalTo(BigDecimal("1000.00")))
+        assertThat(response.body?.last()?.amount, equalTo(BigDecimal("1000.00")))
     }
 
+    @Test
+    fun `収入カテゴリ別の合計が正しく返される`() {
+        val response = restTemplate.getForEntity(
+            "http://localhost:$port/api/transactions/2025-06-01/summary/income",
+            Map::class.java
+        )
 
+        assertThat(response.statusCode, equalTo(HttpStatus.OK))
 
+        val body = response.body as Map<*, *>
+        assertThat(body["給与"], equalTo(250000.0))
+        assertThat(body["副業"], equalTo(50000.0))
+        //家賃keyないこと確認
+        assertThat(body.containsKey("家賃"), equalTo(false)) // expenseは含まれない
+    }
 
+    @Test
+    fun `支出カテゴリ別の合計が正しく返される`() {
+        val response = restTemplate.getForEntity(
+            "http://localhost:$port/api/transactions/2025-06-01/summary/expense",
+            Map::class.java
+        )
+
+        assertThat(response.statusCode, equalTo(HttpStatus.OK))
+
+        val body = response.body as Map<*, *>
+        assertThat(body["家賃"], equalTo(70000.0))
+        assertThat(body.containsKey("給与"), equalTo(false))
+    }
+
+    @Test
+    fun `月ごとの収支サマリーが返る`() {
+        val response = restTemplate.exchange(
+            "http://localhost:$port/api/transactions/monthly-summary",
+            HttpMethod.GET,
+            null,
+            object : ParameterizedTypeReference<List<Map<String, Any>>>() {}
+        )
+
+        assertThat(response.statusCode, equalTo(HttpStatus.OK))
+        val body = response.body!!
+        assertThat(body.size, equalTo(3))
+
+        val april = body.find { it["month"] == "2025-04" }!!
+        assertThat(april["income"], equalTo(300000))
+        assertThat(april["expense"], equalTo(70000))
+
+        val may = body.find { it["month"] == "2025-05" }!!
+        assertThat(may["income"], equalTo(50000))
+        assertThat(may["expense"], equalTo(15000))
+    }
 }

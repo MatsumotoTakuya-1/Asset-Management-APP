@@ -8,10 +8,6 @@ import java.time.LocalDate
 
 @Repository
 interface TransactionRepository : CrudRepository<Transaction, Long> {
-
-    fun findByYearMonth(yearMonth: LocalDate) : List<Transaction>
-
-    fun findAllByUserId(userId: Long) : List<Transaction>
-
-
+    fun findByYearMonth(yearMonth: LocalDate): List<Transaction>
+    fun findAllByUserId(userId: Long): List<Transaction>
 }

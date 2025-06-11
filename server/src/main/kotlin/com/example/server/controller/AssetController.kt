@@ -124,6 +124,7 @@ class AssetController(
         return ResponseEntity.ok(summary)
     }
 
+    //使ってない。テストも書いてない
     @PostMapping
     fun postAssetRecord(@RequestBody request: AssetRecordRequest) {
         val parsedYearMonth = LocalDate.parse(request.yearMonth)

@@ -27,15 +27,12 @@ class TransactionController(
     private val transactionService: TransactionService
 ) {
 
-    // 一覧取得
+    // 一覧取得 使ってない。
     @GetMapping("/{yearMonth}")
-    fun getTotalAsset(@PathVariable yearMonth: String?): ResponseEntity<List<TransactionResponse>?> {
-        val setYearMonth = yearMonth?.take(7) //2025-06-30 -> 2025-06
+    fun getTotalAsset(@PathVariable yearMonth: String): ResponseEntity<List<TransactionResponse>?> {
+        val setYearMonth = yearMonth.take(7) //2025-06-30 -> 2025-06
         val parsedYearMonth = LocalDate.parse("$setYearMonth-01")
-
-
         val transactions = transactionRepository.findByYearMonth(parsedYearMonth)
-
         println(transactions)
         val response = transactions.map {
             TransactionResponse(
@@ -46,21 +43,19 @@ class TransactionController(
                 type = it.type,
                 isFixed = it.isFixed,
                 yearMonth = it.yearMonth,
-                userId = it.user.id!!
+                userId = it.user.id!! //userのid定義が初期値0なら!!不要
             )
         }
         println(response)
-
         return ResponseEntity.ok(response)
     }
 
-    // 登録
+    // 月のデータ登録
     @PostMapping("/{yearMonth}")
     fun postTransaction(
         @RequestBody request: List<TransactionRequest>,
         @PathVariable yearMonth: String
     ): ResponseEntity<String> {
-//        println("入った")
         val setYearMonth = yearMonth.take(7) //2025-06-30 -> 2025-06
         val parsedYearMonth = LocalDate.parse("$setYearMonth-01")//何が来ても１日に固定
         val transactions = request.map {
@@ -104,7 +99,6 @@ class TransactionController(
 
     @GetMapping("/monthly-summary")
     fun getMonthlySummary(): ResponseEntity<List<MonthlySummaryResponse>> {
-
         val summary = transactionService.getMonthlySummaryByUser(1L)
         return ResponseEntity.ok(summary)
     }

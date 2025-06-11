@@ -43,17 +43,12 @@ const TransactionInputPage = () => {
                 const yearMonth = new Date().toISOString()
                 if (!yearMonth) return;
                 const res = await axios.get(`/api/transactions/${yearMonth}/summary/${tab}`);
-                console.log(res.data);//{家賃: 170000, 外食: 4000}
-                // const mapped = {};
-                // res.data.forEach(item => {
-                //     mapped[item.category] = item.totalAmount;
-                // });
+                // console.log(res.data);//{家賃: 170000, 外食: 4000}
                 setSummary(res.data);
             } catch (err) {
                 console.error("カテゴリ合計取得失敗", err);
             }
         };
-
         fetchSummary();
     }, [yearMonth, tab]);
 
@@ -70,11 +65,10 @@ const TransactionInputPage = () => {
                     yearMonth: yearMonth,
                     memo: "下記はあとで実装",
                     is_fixed: false,
-                    userId: 1
+                    userId: 1 //固定
 
                 }));
-            console.log(payload);
-
+            // console.log(payload);//{給与: 250000, 副業: 1000,...}
             await axios.post(`/api/transactions/${yearMonth}`, payload);
             alert("Saved successfully");
         } catch (err) {
@@ -84,7 +78,7 @@ const TransactionInputPage = () => {
 
     return (
         <Box>
-            <Typography variant="h5" textAlign={"left"} gutterBottom>
+            <Typography variant="h5" fontWeight={"bold"} textAlign={"left"} gutterBottom>
                 収入 & 支出 - {yearMonth}
             </Typography>
 
@@ -97,9 +91,9 @@ const TransactionInputPage = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Category</TableCell>
-                            <TableCell>Amount</TableCell>
-                            <TableCell>Total for Month</TableCell>
+                            <TableCell>カテゴリ</TableCell>
+                            <TableCell>金額</TableCell>
+                            <TableCell>月の合計</TableCell>
                             <TableCell>History</TableCell>
                         </TableRow>
                     </TableHead>
@@ -119,7 +113,7 @@ const TransactionInputPage = () => {
             </TableContainer>
 
             <Box textAlign="right">
-                <Button variant="contained" color="primary" onClick={handleSubmit}>
+                <Button variant="outlined" color="primary" onClick={handleSubmit}>
                     Save
                 </Button>
             </Box>

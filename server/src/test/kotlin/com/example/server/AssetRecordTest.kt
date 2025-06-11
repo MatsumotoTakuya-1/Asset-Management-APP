@@ -168,8 +168,6 @@ class AssetRecordTest(
         //assertThat(record.asset.name, equalTo("銀行"))
         assertThat(record.amount, equalTo(BigDecimal("1000.00")))
         assertThat(record.memo, equalTo("test"))
-
-
     }
 
     @Test
@@ -179,9 +177,9 @@ class AssetRecordTest(
             List::class.java
         )
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
-        assertThat(response.body as List<*>, equalTo(listOf<AssetRecord>()))
 
-
+        val body = response.body as List<Map<*, *>>
+        assertThat(body.size, equalTo(0))
     }
 
 }

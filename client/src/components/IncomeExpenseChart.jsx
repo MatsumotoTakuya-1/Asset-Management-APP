@@ -8,7 +8,15 @@ const IncomeExpenseChart = () => {
 
     useEffect(() => {
         axios.get("/api/transactions/monthly-summary")
-            .then(res => setData(res.data))
+            .then(res => {
+                console.log(res.data);
+                const formatted = res.data.map((item) => ({
+                    ...item,
+                    month: item.month,
+                    // month: new Date(item.month + "-01").toLocaleString("default", {month: "short"})
+                })).slice(-12);
+                setData(formatted)
+            })
             .catch(err => console.error(err));
     }, []);
 
@@ -22,16 +30,23 @@ const IncomeExpenseChart = () => {
     // ]
 
     return (
-        <Box sx={{mt: 5}}>
-
+        <Box>
+            <Typography variant="h6" fontWeight={"bold"} textAlign={"left"}
+                        color="textSecondary" mb={1}>年間収支</Typography>
             <ResponsiveContainer height={300}>
-                <BarChart data={data}>
+                <BarChart data={data} margin={{left: 20}}>
                     <XAxis dataKey="month"/>
-                    <YAxis/>
+                    <YAxis domain={[0, "auto"]}
+                           tickFormatter={(val) => {
+                               // if (val >= 1_000_000) return `￥${val / 1_000_000}M`;
+                               if (val >= 1_000_0) return `${val / 1_000_0}万`;
+                               return `${val.toLocaleString()}`;
+                           }
+                           }/>
                     <Tooltip/>
                     <Legend/>
-                    <Bar dataKey="income" name="Income" fill="#4caf50"/>
-                    <Bar dataKey="expense" name="Expense" fill="#f44336"/>
+                    <Bar dataKey="income" name="収入" fill="#4caf50"/>
+                    <Bar dataKey="expense" name="支出" fill="#f44336"/>
                 </BarChart>
             </ResponsiveContainer>
         </Box>

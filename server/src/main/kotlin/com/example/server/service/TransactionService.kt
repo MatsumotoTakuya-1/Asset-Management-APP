@@ -13,11 +13,8 @@ import java.time.LocalDate
 class TransactionService(
     private val transactionRepository: TransactionRepository
 ) {
-
-
     fun getMonthlySummaryByUser(userId: Long): List<MonthlySummaryResponse> {
         val transactions = transactionRepository.findAllByUserId(userId)
-
         return transactions
             .groupBy {
                 it.yearMonth.toString().substring(0, 7)

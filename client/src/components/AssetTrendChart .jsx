@@ -43,7 +43,7 @@ const AssetTrendChart = () => {
     return (
         <Box>
             <Typography variant="h6" fontWeight={"bold"} textAlign={"left"}
-                        color="textSecondary" mb={1}>総資産推移</Typography>
+                        color="textSecondary" mb={1}>年間資産推移</Typography>
 
             <ResponsiveContainer height={300}>
                 <AreaChart data={data} margin={{left: 20}}>
