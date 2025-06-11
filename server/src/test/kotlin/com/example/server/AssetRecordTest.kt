@@ -7,6 +7,7 @@ import com.example.server.domain.assetrecord.AssetRecord
 import com.example.server.domain.assetrecord.AssetRecordRepository
 import com.example.server.domain.user.User
 import com.example.server.domain.user.UserRepository
+import jakarta.servlet.http.HttpServletResponse
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach
@@ -27,6 +28,9 @@ class AssetRecordTest(
     @Autowired val assetRecordRepository: AssetRecordRepository
 ) {
 
+
+    @Autowired
+    private lateinit var response: HttpServletResponse
 
     @Autowired
     private lateinit var userRepository: UserRepository
@@ -182,14 +186,16 @@ class AssetRecordTest(
                 userId = 1L,
                 amount = BigDecimal("1000"),
                 memo = "test",
-                yearMonth = "2025"
         )
 
         val response = restTemplate.postForEntity(
             "http://localhost:$port/api/assets/2025-06-01",
-    payload,
-    String::class.java
-    )
+             request,
+            String::class.java
+        )
+
+        assertThat(response.statusCode, equalTo(HttpStatus.OK))
+
 
 
     }

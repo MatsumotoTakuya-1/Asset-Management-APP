@@ -64,7 +64,7 @@ const AssetInputPage = () => {
                     name: asset,
                     userId: 1,
                     amount: amounts[asset],
-                    yearMonth: yearMonth,
+                    // yearMonth: yearMonth,
                     memo: "下記はあとで実装",
                 }));
             console.log(payload);
