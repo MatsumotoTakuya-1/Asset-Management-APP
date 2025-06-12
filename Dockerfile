@@ -24,12 +24,14 @@ FROM gradle:8.4.0-jdk21 AS backend
 
 WORKDIR /app
 
-# 依存キャッシュ用（高速化）
+# 設定ファイルをコピー。なくてもOKだが設定ファイル変わらなければキャッシュされる？
 COPY server/build.gradle.kts server/settings.gradle.kts /app/server/
 COPY server/gradle /app/server/gradle
 
+#仮でstatic作成。なくてもいけるがコピペ。Reactファイルはあとでコピー
 RUN mkdir -p /app/server/src/main/resources/static
 
+# build.gradle.ktsから依存関係ダウンロード。なくてもいける。エラーでもtrueで進む？
 RUN gradle -p server build --no-daemon || true
 
 # すべてコピー（Reactのビルド成果物含む）

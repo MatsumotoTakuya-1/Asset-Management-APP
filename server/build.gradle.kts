@@ -57,6 +57,9 @@ tasks {
     //build時にclient側のpackage.json コマンドを起動.
     val npmBuild by registering(Exec::class) {
         workingDir = file("../client")
+
+        //Docker内でnpm存在しないとエラー出るので存在チェック
+        onlyIf { !file("/usr/local/bin/npm").exists() }
         commandLine("/usr/local/bin/npm", "run", "build:deploy")
     }
 
