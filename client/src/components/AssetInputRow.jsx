@@ -31,7 +31,7 @@ const AssetInputRow = ({assetName, value, onChange, assetId, yearMonth, totalFor
                         : "-"}
                 </TableCell>
                 <TableCell>
-                    <Button size="small" variant="outlined" onClick={() => navigate(`/input/assets/${yearMonth}/${assetId}/history?asset=${assetName}`)}>
+                    <Button size="small" variant="outlined" onClick={() => navigate(`/input/assets/${assetId}/history?asset=${assetName}`)}>
                         View History
                     </Button>
                     {/*/input/assets/:yearMonth/:assetId/historyに遷移予定*/}

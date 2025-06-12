@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -27,7 +28,7 @@ import java.time.LocalDateTime
 @RestController
 @RequestMapping("/api/assets")
 class AssetController(
-    private val asserService: AssetService,
+    private val assetService: AssetService,
     private val assetRepository: AssetRepository,
     private val userRepository: UserRepository,
     private val assetRecordRepository: AssetRecordRepository
@@ -38,7 +39,7 @@ class AssetController(
         val setYearMonth = yearMonth.take(7) //2025-06-30 -> 2025-06
         val parsedYearMonth = LocalDate.parse("$setYearMonth-01")
 
-        val totalAmount = asserService.getTotalFromMemory(parsedYearMonth)
+        val totalAmount = assetService.getTotalFromMemory(parsedYearMonth)
         return ResponseEntity.ok(mapOf("totalAmount" to totalAmount))//{totalAmount:指定付きの総資産}
     }
 
@@ -56,7 +57,7 @@ class AssetController(
         val assets = assetRepository.findAllByUserId(1L)//ユーザid１固定
         println(assets)
         //上記のasset のassetIdを元にassetRecord取ってくる
-        val assetRecord = asserService.getFromMemory(assets, parsedYearMonth)
+        val assetRecord = assetService.getFromMemory(assets, parsedYearMonth)
 
         println(assetRecord)
         val grouped = assetRecord.groupBy { it.asset.name }
@@ -122,7 +123,7 @@ class AssetController(
     //    monthly-summary
     @GetMapping("/monthly-summary")
     fun getMonthlyAssetSummary(): ResponseEntity<List<MonthlyAssetSummaryResponse>> {
-        val summary = asserService.getMonthlySummaryByUser(1L) //ユーザ固定
+        val summary = assetService.getMonthlySummaryByUser(1L) //ユーザ固定
         return ResponseEntity.ok(summary)
     }
 
@@ -142,10 +143,11 @@ class AssetController(
             memo = request.memo,
             createdAt = LocalDateTime.now(),
         )
-        asserService.save(record)
+        assetService.save(record)
     }
 
 
+    //下記から下はテスト書いてない！！
     @GetMapping("/list")
     fun getAssets(): ResponseEntity<List<AssetResponse>> {
         //userId(1L固定）
@@ -172,5 +174,18 @@ class AssetController(
             yearMonth = record.yearMonth,
         )}
         return ResponseEntity.ok(response)
+    }
+
+    @PutMapping("/history/{assetRecordId}")
+    fun putAssetHistory(
+        @PathVariable assetRecordId: Long,
+    ){
+        val assetRecord = assetRecordRepository.findById(assetRecordId)
+
+        val record = assetRecord(
+            amount = request.amount,
+        )
+        assetService.save(record)
+
     }
 }

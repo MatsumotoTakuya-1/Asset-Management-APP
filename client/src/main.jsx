@@ -20,7 +20,7 @@ createRoot(document.getElementById('root')).render(
                     <Route path="/" element={<App/>}/>
                     <Route path="/input/transactions/:yearMonth" element={<TransactionInputPage/>}/>
                     <Route path="/input/assets/:yearMonth" element={<AssetInputPage/>}/>
-                    <Route path="/input/assets/:yearMonth/:assetId/history" element={<AssetHistoryPage/>}/>
+                    <Route path="/input/assets/:assetId/history" element={<AssetHistoryPage/>}/>
                 </Routes>
             </BrowserRouter>
         </AppLayout>
