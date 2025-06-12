@@ -18,7 +18,7 @@ import axios from "axios";
 import TransactionInputRow from "../components/TransactionInputRow";
 import AssetInputRow from "./AssetInputRow.jsx";
 
-const assetCategories = ["銀行", "証券", "仮想通貨", "不動産", "その他"];
+// const assetCategories = ["銀行", "証券", "仮想通貨", "不動産", "その他"];
 // const assetTypes = ["bank", "stock", "crypto", "rent", "other"];
 
 const AssetInputPage = () => {
@@ -61,7 +61,7 @@ const AssetInputPage = () => {
         try{
             const res = await axios.get("/api/assets/list");
             setAssets(res.data); //[{id,name,..},{}]
-            console.log(res.data);
+            // console.log(res.data);
         } catch (err) {
             console.error("assets取得失敗", err);
         }
@@ -77,12 +77,12 @@ const AssetInputPage = () => {
     const handleSubmit = async () => {
         try {
             const yearMonth = new Date().toISOString()
-            const payload = assetCategories
-                .filter((asset) => amounts[asset])
+            const payload = assets
+                .filter((asset) => amounts[asset.name])
                 .map((asset) => ({
-                    name: asset,
+                    name: asset.name,
                     userId: 1,
-                    amount: amounts[asset],
+                    amount: amounts[asset.name],
                     // yearMonth: yearMonth,
                     memo: "下記はあとで実装",
                 }));
@@ -119,16 +119,16 @@ const AssetInputPage = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {assetCategories.map((asset) => (
+                        {assets.map((asset) => (
                             <AssetInputRow
-                                key={asset}
-                                assetName={asset}
+                                key={asset.id}
+                                assetId={asset.id}
+                                assetName={asset.name}
                                 yearMonth={yearMonth}
-                                value={amounts[asset] || ""}
-                                onChange={(val) => handleAmountChange(asset, val)}
-                                totalForMonth={summary[asset] || "-"}
-                                currentTotalForMonth={currentSummary[asset] || 0}
-
+                                value={amounts[asset.name] || ""}
+                                onChange={(val) => handleAmountChange(asset.name, val)}
+                                totalForMonth={summary[asset.name] || "-"}
+                                currentTotalForMonth={currentSummary[asset.name] || 0}
                             />
                         ))}
                     </TableBody>

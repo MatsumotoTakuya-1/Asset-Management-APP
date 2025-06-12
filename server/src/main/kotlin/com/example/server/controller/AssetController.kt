@@ -3,10 +3,12 @@ package com.example.server.controller
 import com.example.server.domain.asset.Asset
 import com.example.server.domain.asset.AssetInputRequest
 import com.example.server.domain.asset.AssetRepository
+import com.example.server.domain.asset.AssetResponse
 import com.example.server.domain.asset.MonthlyAssetSummaryResponse
 import com.example.server.domain.assetrecord.AssetRecord
 import com.example.server.domain.assetrecord.AssetRecordRepository
 import com.example.server.domain.assetrecord.AssetRecordRequest
+import com.example.server.domain.assetrecord.AssetRecordResponse
 import com.example.server.domain.transaction.MonthlySummaryResponse
 import com.example.server.domain.user.UserRepository
 import com.example.server.service.AssetService
@@ -145,9 +147,31 @@ class AssetController(
 
 
     @GetMapping("/list")
-    fun getAssets(): ResponseEntity<List<Asset>> {
-        val assets = assetRepository.findAll()
-        println(assets)
-        return ResponseEntity.ok(assets)
+    fun getAssets(): ResponseEntity<List<AssetResponse>> {
+        //userId(1L固定）
+        val assets = assetRepository.findAllByUserId(1L)
+//        println(assets)
+        // AssetにUserエンティティを含むとLAZYロードでJSON変換できない。循環参照になるのでDTO指定して返すのがよき
+        //下記のようにする。assetは省略してit.idのような書き方もできる
+        val response = assets.map { asset -> AssetResponse(
+            id = asset.id!!,
+            name = asset.name,
+            assetType = asset.assetType,
+        )}
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/{yearMonth}/{assetId}/history")
+    fun getAssetHistory(@PathVariable assetId: Long): ResponseEntity<List<AssetRecordResponse>> {
+        val asset = assetRepository.findById(assetId)
+        val assetRecords = assetRecordRepository.findByAsset(asset)
+
+//
+        val response = assetRecords.map { record -> AssetRecordResponse(
+            id = record.id!!,
+            amount = record.amount,
+            yearMonth = record.yearMonth,
+        )}
+        return ResponseEntity.ok(response)
     }
 }
