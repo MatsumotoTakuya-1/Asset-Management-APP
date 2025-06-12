@@ -29,7 +29,7 @@ const GoalSimulationChart = forwardRef((props, ref) => {
                 setFirst(firstValue)
 
                 // シミュレーションロジック
-                // 目標額(targetAmount) = 初期資産(firstValue)✖️(1+月利r）^n+毎月積立額P✖️((1+r)^n-1)/r
+                // 目標額(targetAmount) = 初期資産(firstValue)✖️(1+月利r）^n+毎月積立額P✖️((1+r)^n-1)/r)
                 //rは年利/12、nは期間（月数）
                 const now = new Date();
                 const startYear = now.getFullYear();
@@ -40,6 +40,7 @@ const GoalSimulationChart = forwardRef((props, ref) => {
                 const r = targetRate / 100 / 12; // 月利
                 const n = totalMonths;
 
+
                 const fvGrowth = firstValue * Math.pow(1 + r, n);
                 const monthlyFactor = (Math.pow(1 + r, n) - 1) / r;
                 const monthly = (targetAmount - fvGrowth) / monthlyFactor; //積立額
@@ -48,15 +49,19 @@ const GoalSimulationChart = forwardRef((props, ref) => {
                 setMonthlyAmount(Math.round(monthly));
 
                 const data = [];
-                let value = firstValue;
 
                 for (let i = 0; i < n; i++) {
-                    value = value * (1 + r) + monthly; //現在値✖️月利＋積立額
+                    //初期資産の成長成分
+                    const fvGrowth = firstValue * Math.pow(1 + r, i);
+                    //積立の成長分（１ヶ月分の積立を利息付きで加算）
+                    const monthlyContribution = monthly * ((Math.pow(1 + r, i) - 1) / r);
+                    const totalValue = fvGrowth + monthlyContribution;
+
                     const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
                     const label = `${date.getFullYear()}-${String(
                         date.getMonth() + 1
                     ).padStart(2, "0")}`;
-                    data.push({month: label, amount: Math.round(value)});
+                    data.push({month: label, amount: Math.round(totalValue)});
                 }
 
                 setChartData(data);
