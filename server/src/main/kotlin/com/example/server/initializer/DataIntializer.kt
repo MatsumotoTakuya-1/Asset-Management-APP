@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 import kotlin.random.Random
 
 @Configuration
-@Profile("dev")
+//@Profile("dev")
 class DataInitializer {
 
     @Bean
