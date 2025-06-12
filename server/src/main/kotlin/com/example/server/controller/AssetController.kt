@@ -9,9 +9,11 @@ import com.example.server.domain.assetrecord.AssetRecord
 import com.example.server.domain.assetrecord.AssetRecordRepository
 import com.example.server.domain.assetrecord.AssetRecordRequest
 import com.example.server.domain.assetrecord.AssetRecordResponse
+import com.example.server.domain.assetrecord.UpdateAssetRecordRequest
 import com.example.server.domain.transaction.MonthlySummaryResponse
 import com.example.server.domain.user.UserRepository
 import com.example.server.service.AssetService
+import org.hibernate.sql.Update
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -179,13 +181,14 @@ class AssetController(
     @PutMapping("/history/{assetRecordId}")
     fun putAssetHistory(
         @PathVariable assetRecordId: Long,
-    ){
+        @RequestBody request: UpdateAssetRecordRequest
+    ):ResponseEntity<Void> {
         val assetRecord = assetRecordRepository.findById(assetRecordId)
 
-        val record = assetRecord(
-            amount = request.amount,
-        )
-        assetService.save(record)
+        assetRecord.amount = request.amount
+        assetRecordRepository.save(assetRecord)
+
+        return ResponseEntity.ok().build()
 
     }
 }
