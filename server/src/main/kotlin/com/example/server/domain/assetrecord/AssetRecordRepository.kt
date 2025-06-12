@@ -19,5 +19,8 @@ interface AssetRecordRepository : CrudRepository<AssetRecord, Long> {
 
     fun findByAssetAndYearMonth(asset: Asset, yearMonth: LocalDate): AssetRecord?
 
+    fun findByAssetOrderByYearMonth(asset: Asset): List<AssetRecord>
+
+
 }
 

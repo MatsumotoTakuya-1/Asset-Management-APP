@@ -15,6 +15,7 @@ import com.example.server.domain.user.UserRepository
 import com.example.server.service.AssetService
 import org.hibernate.sql.Update
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -168,9 +169,12 @@ class AssetController(
     @GetMapping("/history/{assetId}")
     fun getAssetHistory(@PathVariable assetId: Long): ResponseEntity<List<AssetRecordResponse>> {
         val asset = assetRepository.findById(assetId).orElseThrow { IllegalArgumentException("Asset is not found") }
-        val assetRecords = assetRecordRepository.findByAsset(asset)
+//        val assetRecords = assetRecordRepository.findByAsset(asset)
+        val assetRecords = assetRecordRepository.findByAssetOrderByYearMonth(asset)
+
 //
-        val response = assetRecords.map { record -> AssetRecordResponse(
+        val response = assetRecords.map { record ->
+            AssetRecordResponse(
             id = record.id!!,
             amount = record.amount,
             yearMonth = record.yearMonth,
@@ -183,12 +187,18 @@ class AssetController(
         @PathVariable assetRecordId: Long,
         @RequestBody request: UpdateAssetRecordRequest
     ):ResponseEntity<Void> {
-        val assetRecord = assetRecordRepository.findById(assetRecordId)
+        //findByIdの戻り値はOptional型で中に値あるか不明？入ってなければ例外処理のthrowなければ.amountにアクセスできない
+        val assetRecord = assetRecordRepository.findById(assetRecordId).orElseThrow { IllegalArgumentException("Asset is not found") }
 
         assetRecord.amount = request.amount
         assetRecordRepository.save(assetRecord)
 
         return ResponseEntity.ok().build()
+    }
 
+    @DeleteMapping("/history/{assetRecordId}")
+    fun deleteAssetHistory(@PathVariable assetRecordId: Long): ResponseEntity<Void> {
+        assetRecordRepository.deleteById(assetRecordId)
+        return ResponseEntity.ok().build()
     }
 }
