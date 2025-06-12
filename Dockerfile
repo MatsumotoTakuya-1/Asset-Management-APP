@@ -44,7 +44,9 @@ RUN gradle -p server bootJar --no-daemon
 # ----------------------------------------
 # Step 3: 実行用の軽量イメージ（JRE）
 # ----------------------------------------
-FROM eclipse-temurin:21-jre
+#eclipse-temurin:21-jdkでもいけるが、jdk=jrk+開発ツールなのでjrkの方が軽量らしい
+#FROM eclipse-temurin:21-jre
+FROM openjdk:21
 
 WORKDIR /app
 
