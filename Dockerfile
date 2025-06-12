@@ -1,20 +1,26 @@
 # ----------------------------------------
 # Step 1: Node.jsでReactアプリをビルド
 # ----------------------------------------
+#node:20を使う。　frontendはラベル
 FROM node:20 AS frontend
 
+# 作業ディレクトリ
 WORKDIR /app/client
 
+#package.json,package-lock.jsonをコピーし、npm i
+#package*.jsonが変更されない限り、キャッシュされる
 COPY client/package*.json ./
 RUN npm install
 
+# client全体をコピーし、distフォルダを作成。
 COPY client/ ./
 RUN npm run build
 
 # ----------------------------------------
 # Step 2: Kotlin + Gradle でSpring Bootをビルド
 # ----------------------------------------
-FROM gradle:8.4.0-jdk17 AS backend
+#jdk(javaのsdkはver21),gladleのverはコピペ
+FROM gradle:8.4.0-jdk21 AS backend
 
 WORKDIR /app
 
