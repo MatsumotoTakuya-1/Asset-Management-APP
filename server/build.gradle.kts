@@ -69,10 +69,10 @@ tasks {
 }
 
 
-tasks.test {
-    //build時testスキップ。本番では消す
-    onlyIf { false }
-}
+//tasks.test {
+//    //build時testスキップ。本番では消す
+//    onlyIf { false }
+//}
 
 tasks.withType<Test> {
     useJUnitPlatform()
