@@ -127,7 +127,7 @@ class AssetRecordTest(
             )
         )
         val response = restTemplate.getForEntity(
-            "http://localhost:$port/api/assets/2025-05-09/summary",
+            "http://localhost:$port/api/assets/2025-05-01/summary",
             Map::class.java
         )
 

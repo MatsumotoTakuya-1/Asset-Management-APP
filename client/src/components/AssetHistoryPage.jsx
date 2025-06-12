@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import {useLocation, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {
@@ -20,10 +20,16 @@ const AssetHistoryPage = () => {
     const {yearMonth, assetId} = useParams();
     const [history, setHistory] = useState([]);
 
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+
+    const assetName = queryParams.get("asset");
+
     const fetchHistory = async () => {
         try {
             const res = await axios.get(`/api/assets/history/${assetId}`);
             setHistory(res.data);
+            // console.log(res.data);
         }catch (error) {
             console.log(error);
         }
@@ -31,19 +37,21 @@ const AssetHistoryPage = () => {
 
     useEffect(() => {
         fetchHistory();
-    }, [yearMonth, assetId]);
+    }, [assetId]);
 
     return (
         <Box>
-            <Typography variant="body2" color="textSecondary">資産履歴 - {yearMonth}</Typography>
+            <Typography variant="h5" fontWeight={"bold"} textAlign={"left"} gutterBottom>
+                資産履歴 - {assetName}</Typography>
 
             <TableContainer>
                 <Table>
                     <TableHead>
-                        <TableCell>日付</TableCell>
-                        <TableCell>金額</TableCell>
+                        <TableRow>
+                            <TableCell>日付</TableCell>
+                            <TableCell>金額</TableCell>
+                        </TableRow>
                     </TableHead>
-                </Table>
                 <TableBody>
                     {history.map((item, index) => (
                         <TableRow key={index}>
@@ -52,6 +60,7 @@ const AssetHistoryPage = () => {
                         </TableRow>
                     ))}
                 </TableBody>
+                </Table>
             </TableContainer>
         </Box>
     )

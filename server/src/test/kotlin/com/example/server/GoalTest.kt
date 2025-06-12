@@ -58,6 +58,12 @@ class GoalControllerTest(
             String::class.java
         )
 
+         restTemplate.postForEntity(
+            "http://localhost:$port/api/goals",
+            request,
+            String::class.java
+        )
+
         assertThat(response.statusCode, equalTo(HttpStatus.OK))
         val goal = goalRepository.findByUserId(user.id!!)
         assertThat(goal?.targetAmount, equalTo(1000000))

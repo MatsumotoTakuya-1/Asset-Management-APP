@@ -161,11 +161,10 @@ class AssetController(
         return ResponseEntity.ok(response)
     }
 
-    @GetMapping("/{yearMonth}/{assetId}/history")
+    @GetMapping("/history/{assetId}")
     fun getAssetHistory(@PathVariable assetId: Long): ResponseEntity<List<AssetRecordResponse>> {
-        val asset = assetRepository.findById(assetId)
+        val asset = assetRepository.findById(assetId).orElseThrow { IllegalArgumentException("Asset is not found") }
         val assetRecords = assetRecordRepository.findByAsset(asset)
-
 //
         val response = assetRecords.map { record -> AssetRecordResponse(
             id = record.id!!,

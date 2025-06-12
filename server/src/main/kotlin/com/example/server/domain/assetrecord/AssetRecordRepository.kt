@@ -15,7 +15,7 @@ interface AssetRecordRepository : CrudRepository<AssetRecord, Long> {
     @Query("SELECT ar FROM AssetRecord  ar WHERE ar.asset IN :assets")
     fun findAllByAsset(@Param("assets") assets: List<Asset>): List<AssetRecord>
 
-    fun findByAsset(asset: Asset): List<AssetRecord?>
+    fun findByAsset(asset: Asset): List<AssetRecord>
 
     fun findByAssetAndYearMonth(asset: Asset, yearMonth: LocalDate): AssetRecord?
 
