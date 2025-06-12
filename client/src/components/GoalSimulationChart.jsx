@@ -117,6 +117,7 @@ const GoalSimulationChart = forwardRef((props, ref) => {
                     <Area
                         type="monotone"
                         dataKey="principal"
+                        stackId={1}
                         stroke="#4caf50"
                         fill="#4caf50"
                         fillOpacity={0.2}
@@ -125,6 +126,7 @@ const GoalSimulationChart = forwardRef((props, ref) => {
                     <Area
                         type="monotone"
                         dataKey="profit"
+                        stackId={1}
                         stroke="#8884d8"
                         fill="#8884d8"
                         // fillOpacity={0.4}
