@@ -13,23 +13,33 @@ import {
     TableHead,
     TableRow,
     Button,
-    Paper, TextField,
+    Paper,
+    TextField, Alert, Snackbar,
 } from "@mui/material";
 
 const AssetHistoryPage = () => {
     const {assetId} = useParams();
     const [history, setHistory] = useState([]);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
 
     const assetName = queryParams.get("asset");
 
+    const showSnackbar = (message, severity = "success") => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
+
     const fetchHistory = async () => {
         try {
             const res = await axios.get(`/api/assets/history/${assetId}`);
             setHistory(res.data);
-            console.log(res.data);
+            // console.log(res.data);
         }catch (error) {
             console.log(error);
         }
@@ -43,15 +53,18 @@ const AssetHistoryPage = () => {
     }
 
     //  更新処理
-    const handleUpdate = (assetRecordId, amount) => {
+    const handleUpdate = async  (assetRecordId, amount) => {
         try{
-            axios.put(`/api/assets/history/${assetRecordId}`, {
+            await axios.put(`/api/assets/history/${assetRecordId}`, {
                 amount: amount,
             });
-            alert("Updated successfully.");
+            // alert("Updated successfully.");
+            showSnackbar("Successfully updated history", "success");
             fetchHistory();
         }catch (error) {
             console.log(error);
+            showSnackbar("Error updated history", "error");
+
         }
     }
 
@@ -71,6 +84,7 @@ const AssetHistoryPage = () => {
     }, [assetId]);
 
     return (
+        <>
         <Box>
             <Typography variant="h5" fontWeight={"bold"} textAlign={"left"} gutterBottom>
                 資産履歴 - {assetName}</Typography>
@@ -101,6 +115,18 @@ const AssetHistoryPage = () => {
                 </Table>
             </TableContainer>
         </Box>
+
+    <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMessage}
+        </Alert>
+    </Snackbar>
+    </>
     )
 }
 
