@@ -38,7 +38,7 @@ RUN gradle -p server build --no-daemon || true
 COPY server /app/server
 COPY --from=frontend /app/client/dist/ /app/server/src/main/resources/static/
 
-# 本ビルド
+# 本ビルド 実行可能な.jarを生成(アプリコード、依存関係、静的ファイル？？
 RUN gradle -p server bootJar --no-daemon
 
 # ----------------------------------------
