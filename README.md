@@ -1,0 +1,1 @@
+buildコマンド： ./gradlew build

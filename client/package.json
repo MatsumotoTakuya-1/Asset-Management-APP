@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "copy": "find ../server/src/main/resources/static -type f -delete && cp -a dist/* ../server/src/main/resources/static/",
+    "build:deploy": "npm run build && npm run copy",
     "lint": "eslint .",
     "preview": "vite preview"
   },
