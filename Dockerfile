@@ -44,11 +44,13 @@ RUN gradle -p server bootJar --no-daemon
 # ----------------------------------------
 # Step 3: 実行用の軽量イメージ（JRE）
 # ----------------------------------------
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
+#step2でビルドした.jarファイルをコピー
 COPY --from=backend /app/server/build/libs/*.jar app.jar
 
+#8080ポートでアプリ実行。コピペ
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
