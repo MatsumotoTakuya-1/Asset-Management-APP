@@ -3,7 +3,7 @@ import {TableRow, TableCell, TextField, Button} from "@mui/material";
 import {useNavigate} from "react-router";
 
 
-const AssetInputRow = ({assetName, value, onChange, totalForMonth, currentTotalForMonth}) => {
+const AssetInputRow = ({assetName, value, onChange,yearMonth, totalForMonth, currentTotalForMonth}) => {
     const navigate = useNavigate();
 
 
@@ -31,7 +31,7 @@ const AssetInputRow = ({assetName, value, onChange, totalForMonth, currentTotalF
                         : "-"}
                 </TableCell>
                 <TableCell>
-                    <Button size="small" variant="outlined" onClick={() => navigate("/")}>
+                    <Button size="small" variant="outlined" onClick={() => navigate(`/input/assets/${yearMonth}/:assetId/history`)}>
                         View History
                     </Button>
                     {/*/input/assets/:yearMonth/:assetId/historyに遷移予定*/}

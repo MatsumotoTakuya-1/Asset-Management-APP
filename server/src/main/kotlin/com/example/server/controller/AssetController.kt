@@ -144,4 +144,10 @@ class AssetController(
     }
 
 
+    @GetMapping("/list")
+    fun getAssets(): ResponseEntity<List<Asset>> {
+        val assets = assetRepository.findAll()
+        println(assets)
+        return ResponseEntity.ok(assets)
+    }
 }

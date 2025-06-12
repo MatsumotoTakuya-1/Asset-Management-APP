@@ -25,7 +25,8 @@ const AssetInputPage = () => {
     const {yearMonth} = useParams();
     const [amounts, setAmounts] = useState({});
     const [summary, setSummary] = useState({});// 先月の資産額
-    const [currentSummary, setCurrentsummary] = useState({});// 今月の資産額
+    const [currentSummary, setCurrentSummary] = useState({});// 今月の資産額
+    const [assets, setAssets] = useState([]);
 
 
     // 金額入力の変更を処理
@@ -49,16 +50,27 @@ const AssetInputPage = () => {
             const current_month = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
             if (!current_month) return;
             const res2 = await axios.get(`/api/assets/${current_month}/summary`);
-            setCurrentsummary(res2.data);
+            setCurrentSummary(res2.data);
 
         } catch (err) {
             console.error("先月の資産合計取得失敗", err);
         }
     };
 
+    const fetchAssets = async () => {
+        try{
+            const res = await axios.get("/api/assets/list");
+            setAssets(res.data); //[{id,name,..},{}]
+            console.log(res.data);
+        } catch (err) {
+            console.error("assets取得失敗", err);
+        }
+    }
+
     // 資産の値情報API
     useEffect(() => {
         fetchSummary();
+        fetchAssets();
     }, [yearMonth]);
 
     // 保存処理

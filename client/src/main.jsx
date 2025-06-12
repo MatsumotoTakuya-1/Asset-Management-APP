@@ -8,6 +8,7 @@ import App from './App.jsx'
 import TransactionInputPage from "./components/TransactionInputPage.jsx";
 import {CssBaseline, ThemeProvider} from "@mui/material";
 import AssetInputPage from "./components/AssetInputPage.jsx";
+import AssetHistoryPage from "./components/AssetHistoryPage.jsx";
 
 
 createRoot(document.getElementById('root')).render(
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')).render(
                     <Route path="/" element={<App/>}/>
                     <Route path="/input/transactions/:yearMonth" element={<TransactionInputPage/>}/>
                     <Route path="/input/assets/:yearMonth" element={<AssetInputPage/>}/>
+                    <Route path="/input/assets/:yearMonth/:assetId/history" element={<AssetHistoryPage/>}/>
                 </Routes>
             </BrowserRouter>
         </AppLayout>
