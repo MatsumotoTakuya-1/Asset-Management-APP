@@ -22,6 +22,7 @@ function GoalSettingForm({onSaved}) {
                 alert("到達年は2025-2200年の範囲で指定してください");
                 return
             }
+            //backendでDTOで型指定するとamountがStringでもIntに直してくれる
             await axios.post("/api/goals", {
                 userId: 1,
                 firstValue,
@@ -57,18 +58,24 @@ function GoalSettingForm({onSaved}) {
                     <TextField
                         label="目標額"
                         placeholder="100000000"
-                        type="number"
-                        value={targetAmount}
-                        onChange={(e) => setTargetAmount(e.target.value)}
+                        type="text"
+                        value={(Number(targetAmount) || "").toLocaleString()}
+                        onChange={(e) => {
+                            const raw = e.target.value.replaceAll(",", "");
+                            if (/^\d*$/.test(raw)) setTargetAmount(raw);
+                        }}
                         fullWidth
                     />
 
                     <TextField
                         label="初期費用"
                         placeholder="100000"
-                        type="number"
-                        value={firstValue}
-                        onChange={(e) => setFirstValue(e.target.value)}
+                        type="text"
+                        value={(Number(firstValue) || "").toLocaleString()}
+                        onChange={(e) => {
+                            const raw = e.target.value.replaceAll(",", "");
+                            if (/^\d*$/.test(raw)) setFirstValue(raw);
+                        }}
                         fullWidth
                     />
 
@@ -87,9 +94,12 @@ function GoalSettingForm({onSaved}) {
                     <TextField
                         label="想定年利 (%)"
                         placeholder="5%"
-                        type="number"
+                        type="text"
                         value={targetRate}
-                        onChange={(e) => setTargetRate(e.target.value)}
+                        onChange={(e) => {
+                            const raw = e.target.value;
+                            if (/^\d*\.?\d*$/.test(raw)) setTargetRate(raw);
+                        }}
                         fullWidth
                     />
                 </Stack>

@@ -51,17 +51,28 @@ const GoalSimulationChart = forwardRef((props, ref) => {
                 const data = [];
 
                 for (let i = 0; i < n; i++) {
+                    const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
+                    const label = `${date.getFullYear()}-${String(
+                        date.getMonth() + 1
+                    ).padStart(2, "0")}`;
+
+                    //元本
+                    const totalContribution = monthly * i;
+
+                    //複利による資産総額
                     //初期資産の成長成分
                     const fvGrowth = firstValue * Math.pow(1 + r, i);
                     //積立の成長分（１ヶ月分の積立を利息付きで加算）
                     const monthlyContribution = monthly * ((Math.pow(1 + r, i) - 1) / r);
                     const totalValue = fvGrowth + monthlyContribution;
 
-                    const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
-                    const label = `${date.getFullYear()}-${String(
-                        date.getMonth() + 1
-                    ).padStart(2, "0")}`;
-                    data.push({month: label, amount: Math.round(totalValue)});
+
+                    data.push({
+                        month: label,
+                        total: Math.round(totalValue),
+                    principal: Math.round(firstValue + totalContribution),
+                    profit: Math.round(totalValue - (firstValue + totalContribution)),
+                    });
                 }
 
                 setChartData(data);
@@ -96,7 +107,7 @@ const GoalSimulationChart = forwardRef((props, ref) => {
                     <XAxis dataKey="month"/>
                     <YAxis domain={[0, "auto"]}
                            tickFormatter={(val) => {
-                               // if (val >= 1_000_000) return `￥${val / 1_000_000}M`;
+                               if (val >= 100_000_000) return `${val / 100_000_000}億`;
                                if (val >= 1_000_0) return `${val / 1_000_0}万`;
                                return `${val.toLocaleString()}`;
                            }
@@ -105,11 +116,19 @@ const GoalSimulationChart = forwardRef((props, ref) => {
                     <Legend/>
                     <Area
                         type="monotone"
-                        dataKey="amount"
+                        dataKey="principal"
+                        stroke="#4caf50"
+                        fill="#4caf50"
+                        fillOpacity={0.2}
+                        name="積立元本"
+                    />
+                    <Area
+                        type="monotone"
+                        dataKey="profit"
                         stroke="#8884d8"
                         fill="#8884d8"
-                        fillOpacity={0.3}
-                        name="シミュレーション資産額"
+                        // fillOpacity={0.4}
+                        name="運用益"
                     />
                 </AreaChart>
             </ResponsiveContainer>
