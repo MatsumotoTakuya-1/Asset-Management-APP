@@ -45,20 +45,20 @@ const TransactionInputPage = () => {
             [category]: value,
         }));
     };
-
+    const fetchSummary = async () => {
+        try {
+            const yearMonth = new Date().toISOString()
+            if (!yearMonth) return;
+            const res = await axios.get(`/api/transactions/${yearMonth}/summary/${tab}`);
+            // console.log(res.data);//{家賃: 170000, 外食: 4000}
+            setSummary(res.data);
+        } catch (err) {
+            console.error("カテゴリ合計取得失敗", err);
+        }
+    };
     // 合計取得API呼び出し
     useEffect(() => {
-        const fetchSummary = async () => {
-            try {
-                const yearMonth = new Date().toISOString()
-                if (!yearMonth) return;
-                const res = await axios.get(`/api/transactions/${yearMonth}/summary/${tab}`);
-                // console.log(res.data);//{家賃: 170000, 外食: 4000}
-                setSummary(res.data);
-            } catch (err) {
-                console.error("カテゴリ合計取得失敗", err);
-            }
-        };
+
         fetchSummary();
     }, [yearMonth, tab]);
 
@@ -81,6 +81,9 @@ const TransactionInputPage = () => {
             // console.log(payload);//{給与: 250000, 副業: 1000,...}
             await axios.post(`/api/transactions/${yearMonth}`, payload);
             showSnackbar("Successfully saved", "success");
+            setAmounts("")
+            fetchSummary();
+
         } catch (err) {
             console.error("Save failed", err);
             showSnackbar("Error saved", "error");
