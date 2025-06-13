@@ -4,8 +4,6 @@ import axios from "axios";
 import {
     Typography,
     Box,
-    Tabs,
-    Tab,
     Table,
     TableBody,
     TableCell,
@@ -13,7 +11,6 @@ import {
     TableHead,
     TableRow,
     Button,
-    Paper,
     TextField, Alert, Snackbar,
 } from "@mui/material";
 
@@ -72,10 +69,13 @@ const AssetHistoryPage = () => {
     const handleDelete = (assetRecordId) => {
         try{
             axios.delete(`/api/assets/history/${assetRecordId}`);
-            alert("Deleted successfully.");
+            // alert("Deleted successfully.");
+            showSnackbar("Successfully delete asset record", "success");
             fetchHistory();
         }catch (error) {
             console.log(error);
+            showSnackbar("Error delete asset record", "error");
+
         }
     }
 

@@ -11,7 +11,7 @@ import {
     TableHead,
     TableRow,
     Button,
-    Paper,
+    Paper, Snackbar, Alert,
 } from "@mui/material";
 import {useEffect, useState} from "react";
 import axios from "axios";
@@ -25,6 +25,16 @@ const TransactionInputPage = () => {
     const [tab, setTab] = useState("income");
     const [amounts, setAmounts] = useState({});
     const [summary, setSummary] = useState({});
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+    const showSnackbar = (message, severity = "success") => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
 
     const categories = tab === "income" ? incomeCategories : expenseCategories;
 
@@ -70,13 +80,16 @@ const TransactionInputPage = () => {
                 }));
             // console.log(payload);//{給与: 250000, 副業: 1000,...}
             await axios.post(`/api/transactions/${yearMonth}`, payload);
-            alert("Saved successfully");
+            showSnackbar("Successfully saved", "success");
         } catch (err) {
             console.error("Save failed", err);
+            showSnackbar("Error saved", "error");
+
         }
     };
 
     return (
+        <>
         <Box>
             <Typography variant="h5" fontWeight={"bold"} textAlign={"left"} gutterBottom>
                 収入 & 支出 - {yearMonth}
@@ -118,6 +131,17 @@ const TransactionInputPage = () => {
                 </Button>
             </Box>
         </Box>
+    <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMessage}
+        </Alert>
+    </Snackbar>
+</>
     );
 };
 

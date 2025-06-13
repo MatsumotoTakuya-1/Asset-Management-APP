@@ -1,8 +1,9 @@
 import {useState} from "react";
 import axios from "axios";
 import {
+    Alert,
     Box,
-    Button,
+    Button, Snackbar,
     Stack,
     TextField,
 } from "@mui/material";
@@ -13,6 +14,16 @@ function GoalSettingForm({onSaved}) {
     const [targetAmount, setTargetAmount] = useState("");
     const [targetYear, setTargetYear] = useState("");
     const [targetRate, setTargetRate] = useState("");
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+    const showSnackbar = (message, severity = "success") => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
 
 
     const processingRegister = async () => {
@@ -30,17 +41,21 @@ function GoalSettingForm({onSaved}) {
                 targetYear,
                 targetRate,
             });
-            alert("登録に成功しました。");
+            // alert("登録に成功しました。");
+            showSnackbar("Successfully saved asset goal", "success");
+
             onSaved?.();//定義されていれば呼び出し?.
         } catch (err) {
-            alert("登録失敗");
+            // alert("登録失敗");
             console.error(err);
+            showSnackbar("Error saved asset goal", "error");
+
         }
     };
 
     return (
-
-        <Box
+<>
+    <Box
             component="form"
             onSubmit={(e) => {
                 e.preventDefault();
@@ -112,6 +127,17 @@ function GoalSettingForm({onSaved}) {
                 </Box>
             </Stack>
         </Box>
+    <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+    >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMessage}
+        </Alert>
+    </Snackbar>
+</>
 
     );
 }

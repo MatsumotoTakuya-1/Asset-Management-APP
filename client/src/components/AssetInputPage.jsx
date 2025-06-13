@@ -11,7 +11,7 @@ import {
     TableHead,
     TableRow,
     Button,
-    Paper,
+    Paper, Snackbar, Alert,
 } from "@mui/material";
 import {useEffect, useState} from "react";
 import axios from "axios";
@@ -27,6 +27,16 @@ const AssetInputPage = () => {
     const [summary, setSummary] = useState({});// 先月の資産額
     const [currentSummary, setCurrentSummary] = useState({});// 今月の資産額
     const [assets, setAssets] = useState([]);
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+
+    const showSnackbar = (message, severity = "success") => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
 
 
     // 金額入力の変更を処理
@@ -89,18 +99,19 @@ const AssetInputPage = () => {
             // console.log(payload); //[{name:証券, userId:1, amount:100, memo:"test"},{},]
 
             await axios.post(`/api/assets/${yearMonth}`, payload);
-            alert("今月の資産保存成功");
-
+            // alert("今月の資産保存成功");
+            showSnackbar("Successfully saved asset", "success");
             setAmounts("")
-
             //保存後に再取得
             fetchSummary();
         } catch (err) {
             console.error("Save failed", err);
+            showSnackbar("Error saved asset", "error");
         }
     };
 
     return (
+        <>
         <Box>
             <Typography variant="h5" fontWeight={"bold"} textAlign={"left"} gutterBottom>
                 資産 - {yearMonth}
@@ -141,6 +152,18 @@ const AssetInputPage = () => {
                 </Button>
             </Box>
         </Box>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+        </>
+
     );
 };
 
